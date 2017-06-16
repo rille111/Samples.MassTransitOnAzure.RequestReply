@@ -4,7 +4,8 @@
     {
         static void Main()
         {
-            
+            var form = new frmSender();
+            form.ShowDialog();
         }
     }
 }

@@ -1,0 +1,3 @@
+﻿{
+  "AzureSbConnectionString": "Endpoint=sb://xxx.servicebus.windows.net/;SharedAccessKeyName=xxx;SharedAccessKey=xxx"
+}

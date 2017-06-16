@@ -11,6 +11,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RequestReply.Shared", "Requ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Infrastructure.ServiceBus", "Rille.MassTransit.Extensions\Messaging.Infrastructure.ServiceBus.csproj", "{CB838D59-1972-4D73-913D-F17246AF104E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C421DD97-BBEC-4FD4-8AD4-F087193F3603}"
+	ProjectSection(SolutionItems) = preProject
+		config.example.json = config.example.json
+		config.json = config.json
+		readme.md = readme.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -5,6 +5,7 @@
 
 # Custom stuff
 build/
+config.json
 
 # User-specific files
 *.suo
