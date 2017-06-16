@@ -1,0 +1,3 @@
+[submodule "Rille.MassTransit.Extensions"]
+	path = Rille.MassTransit.Extensions
+	url = https://github.com/rille111/Rille.MassTransit.Extensions.git
