@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Tools\AzureSbConfigCreator.cs" />
     <Compile Include="Tools\JsonConfigFileReader.cs" />
     <Compile Include="UpdateFooCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

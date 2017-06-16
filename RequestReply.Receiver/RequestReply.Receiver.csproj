@@ -75,10 +75,21 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UpdateFooCommandConsumer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RequestReply.Shared\RequestReply.Shared.csproj">
+      <Project>{43E04CE4-080A-44FD-A52A-61AF7166F283}</Project>
+      <Name>RequestReply.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rille.MassTransit.Extensions\Messaging.Infrastructure.ServiceBus.csproj">
+      <Project>{CB838D59-1972-4D73-913D-F17246AF104E}</Project>
+      <Name>Messaging.Infrastructure.ServiceBus</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
