@@ -15,3 +15,6 @@ h2. Conclusions
 **And** sending with `commandSendpoint.Send(new UpdateFooCommand(..));`
 **Then** a queue with name `iupdatefoocommand` gets created and nothing else
 
+**When** publishing an event (ie to a topic) with `await _azureBus.Publish<IUpdateFooCommand>(new UpdateFooCommand());`
+**Then** a grouping container/namespace with name `requestreply.shared` gets created 
+**And** under that container/namespace a Topic with the name `iupdatefoocommand` gets created (with no subscribers)
