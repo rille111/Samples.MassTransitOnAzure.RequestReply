@@ -17,6 +17,25 @@ h2. Conclusions
 **Consumers** will consume both Commands and Events because of how MassTransit works (see below)
 **Subcription** Names are equal to the queue name, hooked up by MassTransit.
 **Queue Names** are the SendEndpoint/ReceiveEndpoint queue names (configured either as a string, or or the interface name if you're using our code - an extension method)
+**Parallell Execution** Is on by default. That is - several consumers will run and handle messages in parallell. You can control this by configuring PrefetchCount.
+
+The message is reserved and when it gets routed to some Consumer, and while the Consumer works - no other Consumer will get this message.
+The message is acknowledged and removed from the Queue when the Consume() method runs to Completion (Task.RanToCompletion)
+
+* Messages are removed from the Queue when:
+	* The message is sent to a Consumer, and runs to Completion (Task.RanToCompletion) TODO: Test by debugging and peeking while debugging
+* Messages are moved to the _skipped queue when
+	* When a receive endpoint gets a message but doesnt have any connected consumers
+	* When a receive endpoint gets a message type but doesnt have any connected consumers that can handle that type. (FooBarTwo gets sent, but we only have Consume<FooBar>) TODO: Test!
+	* When there are several receive endpoints sharing the same queue, DONT DO THIS!
+	* When consumer doesn't know how to handle the message for whatever reason
+* Messages are moved to the _errors queue when:
+	* Only gets moved when the retry policy has been exhausted! Therefore: 
+	* The Consume() Method throws an exception										TODO: Test throw excpetion
+	* The Consume() does not run to Task.RanToCompletion after retries				TODO: Test return Task.Incomplete
+* Messages get moved to the 'deadletter' stash when
+	* Messages have been in the Queue and it expires the TTL. Says so in the docs  TODO: Test by setting a low TTL
+	* MassTransit could potentially move messages here for other reasons
 
 h3. Sending (Commands)
 
@@ -45,7 +64,7 @@ h3. Consuming (Receiving BOTH Commands and Events)
 
 A lot more happens when setting up consumers, to ensure messages get routed correctly, using the MassTransit topology.
 A consumer only ever listens to a Queue, never a Topic. But! The consumer will STILL get messages from both a Topic and a Queue.
-Because a Topic will be created, along with a Subscription that routes the actual Queue!
+Why? Because a Topic will be created, along with a Subscription that route messages to the actual Queue, and then the Consumer gets it from the Queue.
 
 **When** creating bus and connecting a receive endpoint to an interface of `IUpdateFooCommand` to a `IConsumer<UpdateFooCommand>`, like so: `cfg.ReceiveEndpoint<IUpdateFooCommand>`
 **And** then starting the bus
@@ -63,17 +82,18 @@ Knowing this, therefore a Sender/Bus can either
 
 Therefore, MassTransit ensures that you can from a Senders perspective either Send Commands, or Publish Events, and those messages would hit eventually home once anyone has ever set up a consumer.
 
-h3. Fails and exceptions
+h3. Fails, exceptions and dead letters
 
-* Messages are moved to the _skipped queue when
-	* ???
-* Messagea re moved to the _errors queue when
-	* ???
-* Queues have a 'deadletter' stash. Messages get moved there when
-	* ???
+Queues have a 'deadletter' stash. Messages that cannot be delivered to any receiver, or messages that could not be processed, gets moved here.
+There may be various reasons why, but the messages can be peeked and you can call DeadLetterErrorDescription().
+There is other metadata here such as the reason etc. 
 
-h3. Gotchas
+h3. Gotchas and FYIS
 
 * Some times when starting up Consumers, messages that already are in the queue, don't get delivered?? Reason? Dunno! Can't reproduce right now.
-* It's perfectly fine to create you own queue, and a subscription to 
+* It should be fine to create you own queue manually, and add subscription to topics. Just know that when adding consumers, those consumers will either use a queue that you specify,
+but ALSO create topics that route to it. So be heedful of the naming!
 
+http://docs.masstransit-project.com/en/latest/configuration/gotchas.html
+https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues
+http://docs.masstransit-project.com/en/latest/overview/underthehood.html?highlight=_skipped
