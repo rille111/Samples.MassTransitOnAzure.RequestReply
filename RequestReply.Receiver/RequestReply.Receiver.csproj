@@ -73,8 +73,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnotherBarEventConsumer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BarEventConsumer.cs" />
     <Compile Include="UpdateFooCommandConsumer.cs" />
   </ItemGroup>
   <ItemGroup>

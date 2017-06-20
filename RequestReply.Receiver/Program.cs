@@ -30,10 +30,25 @@ namespace RequestReply.Receiver
                     //TODO: How to handle pool of receivers? aka "Competing Consumers"
                     // https://masstransit.readthedocs.io/en/latest/configuration/gotchas.html#how-to-setup-a-competing-consumer
                     // http://docs.masstransit-project.com/en/latest/overview/underthehood.html
-                    cfg.ReceiveEndpoint<IUpdateFooCommand>(c =>
+
+                    // Command Consumers 
+                    cfg.ReceiveEndpoint<IUpdateFooCommand>(c =>  // The interface = the queue name
                     {
-                        c.Consumer<UpdateFooCommandConsumer>();
+                        c.Consumer<UpdateFooCommandConsumer>(); // What class will consume the messages
                     });
+
+                    // Event Consumers
+                    cfg.ReceiveEndpoint("BarQueue", c =>  // The interface name = the queue name
+                    {
+                        c.Consumer<BarEventConsumer>(); // What class will consume the messages
+                    });
+
+                    cfg.ReceiveEndpoint("snooper", c =>  // The interface = the queue name
+                    {
+                        c.Consumer<AnotherBarEventConsumer>(); // What class will consume the messages
+                    });
+
+
                 });
             return bus;
         }

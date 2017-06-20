@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BarEvent.cs" />
     <Compile Include="Tools\JsonConfigFileReader.cs" />
     <Compile Include="UpdateFooCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

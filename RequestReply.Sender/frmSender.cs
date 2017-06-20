@@ -54,12 +54,26 @@ namespace RequestReply.Sender
         {
             var commandSendpoint = await _azureBus.GetSendEndpointAsync<IUpdateFooCommand>();
 
-            await commandSendpoint.Send(new UpdateFooCommand
+            await commandSendpoint.Send( new UpdateFooCommand
             {
                 Id = Guid.NewGuid(),
                 Text = txtMessageText.Text,
                 TimeStampSent = DateTime.Now
             });
+            txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateFooCommand)}) sent OK \n");
+        }
+
+        private async void btnPublishEvent_Click(object sender, EventArgs e)
+        {
+            await _azureBus.Publish(new BarEvent
+            {
+                Id = Guid.NewGuid(),
+                Text = txtMessageText.Text,
+                TimeStampSent = DateTime.Now
+            });
+
+            txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(BarEvent)}) sent OK \n");
+
         }
     }
 }
