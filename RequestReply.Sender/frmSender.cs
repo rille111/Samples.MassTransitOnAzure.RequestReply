@@ -70,17 +70,21 @@ namespace RequestReply.Sender
         private async void btnSend_Click(object sender, EventArgs e)
         {
             var commandSendpoint = await _azureBus.GetSendEndpointAsync<IUpdateFooCommand>();
-            IUpdateFooCommand commandToSend = CreateCommandBasedOnDropdown();
 
+            // Create a command to send, depending on what is chosen in the dropdown.
+            // Note that the object is still declared as IUpdateFooCommand which will have its effect on Masstransit when sending.
+            IUpdateFooCommand commandToSend = CreateCommandBasedOnDropdown();
             commandToSend.Id = Guid.NewGuid();
             commandToSend.Text = txtMessageText.Text;
             commandToSend.TimeStampSent = DateTime.Now;
 
-            // Best is not to Send as an interface, but the concrete type.
+            // Note: Best is NOT to Send as an interface, but the concrete type.
+            // Because if sent as an interface - Consumers would only understand and be able to consume that very interface, not any concrete class,
+            // And that would be an error that could lead to messages being sent to the _skipped queue.
             switch (drpCommandType.SelectedIndex)
             {
                 case 0:
-                    await commandSendpoint.Send((UpdateFooCommand)commandToSend);
+                    await commandSendpoint.Send((UpdateFooCommand)commandToSend); 
                     break;
                 case 1:
                     await commandSendpoint.Send((UpdateFooVersion2Command)commandToSend);
