@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using MassTransit;
 using Messaging.Infrastructure.ServiceBus.BusConfigurator;
 using RequestReply.Shared;
+using RequestReply.Shared.Messages;
 using RequestReply.Shared.Tools;
 
 namespace RequestReply.Sender
@@ -98,7 +99,7 @@ namespace RequestReply.Sender
 
         private void btnSendRequestReply_Click(object sender, EventArgs e)
         {
-
+            throw new NotImplementedException();
         }
 
         private IUpdateFooCommand CreateCommandBasedOnDropdown()

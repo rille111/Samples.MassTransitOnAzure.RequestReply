@@ -3,6 +3,7 @@ using MassTransit;
 using Messaging.Infrastructure.ServiceBus.BusConfigurator;
 using RequestReply.Receiver.Consumers;
 using RequestReply.Shared;
+using RequestReply.Shared.Messages;
 using RequestReply.Shared.Tools;
 
 namespace RequestReply.Receiver
