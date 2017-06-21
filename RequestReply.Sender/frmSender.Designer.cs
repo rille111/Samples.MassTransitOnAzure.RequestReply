@@ -40,13 +40,14 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnPublishEvent = new System.Windows.Forms.Button();
+            this.drpCommandType = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(498, 22);
+            this.btnSend.Location = new System.Drawing.Point(514, 22);
             this.btnSend.Name = "btnSend";
             this.btnSend.Size = new System.Drawing.Size(75, 23);
             this.btnSend.TabIndex = 0;
@@ -56,7 +57,7 @@
             // 
             // txtMessageText
             // 
-            this.txtMessageText.Location = new System.Drawing.Point(91, 6);
+            this.txtMessageText.Location = new System.Drawing.Point(410, 9);
             this.txtMessageText.Name = "txtMessageText";
             this.txtMessageText.Size = new System.Drawing.Size(193, 20);
             this.txtMessageText.TabIndex = 1;
@@ -65,15 +66,15 @@
             // 
             this.drpTotalMessagesToSend.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.drpTotalMessagesToSend.FormattingEnabled = true;
-            this.drpTotalMessagesToSend.Location = new System.Drawing.Point(90, 24);
+            this.drpTotalMessagesToSend.Location = new System.Drawing.Point(77, 24);
             this.drpTotalMessagesToSend.Name = "drpTotalMessagesToSend";
-            this.drpTotalMessagesToSend.Size = new System.Drawing.Size(55, 21);
+            this.drpTotalMessagesToSend.Size = new System.Drawing.Size(47, 21);
             this.drpTotalMessagesToSend.TabIndex = 2;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 27);
+            this.label1.Location = new System.Drawing.Point(2, 27);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(79, 13);
             this.label1.TabIndex = 3;
@@ -82,17 +83,17 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(180, 27);
+            this.label2.Location = new System.Drawing.Point(130, 27);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(137, 13);
+            this.label2.Size = new System.Drawing.Size(79, 13);
             this.label2.TabIndex = 4;
-            this.label2.Text = "Commands, with batches of";
+            this.label2.Text = "with batches of";
             // 
             // drpBatchSize
             // 
             this.drpBatchSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.drpBatchSize.FormattingEnabled = true;
-            this.drpBatchSize.Location = new System.Drawing.Point(340, 24);
+            this.drpBatchSize.Location = new System.Drawing.Point(210, 23);
             this.drpBatchSize.Name = "drpBatchSize";
             this.drpBatchSize.Size = new System.Drawing.Size(55, 21);
             this.drpBatchSize.TabIndex = 5;
@@ -100,16 +101,16 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(401, 27);
+            this.label3.Location = new System.Drawing.Point(271, 27);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(95, 13);
+            this.label3.Size = new System.Drawing.Size(123, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "in each Command.";
+            this.label3.Text = "in each Command, using";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(11, 9);
+            this.label4.Location = new System.Drawing.Point(330, 12);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(74, 13);
             this.label4.TabIndex = 7;
@@ -125,6 +126,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.drpCommandType);
             this.groupBox1.Controls.Add(this.btnSend);
             this.groupBox1.Controls.Add(this.drpTotalMessagesToSend);
             this.groupBox1.Controls.Add(this.label1);
@@ -150,13 +152,22 @@
             // 
             // btnPublishEvent
             // 
-            this.btnPublishEvent.Location = new System.Drawing.Point(498, 19);
+            this.btnPublishEvent.Location = new System.Drawing.Point(514, 19);
             this.btnPublishEvent.Name = "btnPublishEvent";
             this.btnPublishEvent.Size = new System.Drawing.Size(75, 23);
             this.btnPublishEvent.TabIndex = 1;
             this.btnPublishEvent.Text = "Publish!";
             this.btnPublishEvent.UseVisualStyleBackColor = true;
             this.btnPublishEvent.Click += new System.EventHandler(this.btnPublishEvent_Click);
+            // 
+            // drpCommandType
+            // 
+            this.drpCommandType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.drpCommandType.FormattingEnabled = true;
+            this.drpCommandType.Location = new System.Drawing.Point(396, 23);
+            this.drpCommandType.Name = "drpCommandType";
+            this.drpCommandType.Size = new System.Drawing.Size(102, 21);
+            this.drpCommandType.TabIndex = 7;
             // 
             // frmSender
             // 
@@ -192,5 +203,6 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button btnPublishEvent;
+        private System.Windows.Forms.ComboBox drpCommandType;
     }
 }

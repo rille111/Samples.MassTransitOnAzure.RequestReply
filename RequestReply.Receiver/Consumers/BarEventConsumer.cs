@@ -3,14 +3,14 @@ using System.Threading.Tasks;
 using MassTransit;
 using RequestReply.Shared;
 
-namespace RequestReply.Receiver
+namespace RequestReply.Receiver.Consumers
 {
     public class BarEventConsumer : IConsumer<BarEvent>
     {
         public async Task Consume(ConsumeContext<BarEvent> context)
         {
             await Task.Delay(0);
-            Console.WriteLine($"Got {nameof(BarEvent)}!: TimeStampSent: {context.Message.TimeStampSent}, Id:{context.Message.Id}, Text:{context.Message.Text}");
+            Console.WriteLine($"Got Event! {nameof(BarEvent)}!: TimeStampSent: {context.Message.TimeStampSent}, Id:{context.Message.Id}, Text:{context.Message.Text}");
         }
     }
 }

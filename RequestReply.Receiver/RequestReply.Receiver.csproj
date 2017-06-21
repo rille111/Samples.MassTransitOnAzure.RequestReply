@@ -73,11 +73,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnotherBarEventConsumer.cs" />
+    <Compile Include="Consumers\AnotherBarEventConsumer.cs" />
+    <Compile Include="Consumers\IUpdateFooCommandConsumer.cs" />
+    <Compile Include="Consumers\UpdateFooCommandVersion2Consumer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="BarEventConsumer.cs" />
-    <Compile Include="UpdateFooCommandConsumer.cs" />
+    <Compile Include="Consumers\BarEventConsumer.cs" />
+    <Compile Include="Consumers\UpdateFooCommandConsumer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

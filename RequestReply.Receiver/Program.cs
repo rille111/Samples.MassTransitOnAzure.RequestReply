@@ -1,6 +1,7 @@
 ﻿using System;
 using MassTransit;
 using Messaging.Infrastructure.ServiceBus.BusConfigurator;
+using RequestReply.Receiver.Consumers;
 using RequestReply.Shared;
 using RequestReply.Shared.Tools;
 
@@ -35,20 +36,20 @@ namespace RequestReply.Receiver
                     cfg.ReceiveEndpoint<IUpdateFooCommand>(c =>  // The interface = the queue name
                     {
                         c.Consumer<UpdateFooCommandConsumer>(); // What class will consume the messages
+                        c.Consumer<UpdateFooVersion2CommandConsumer>(); // What class will consume the messages
+                        c.Consumer<IUpdateFooCommandConsumer>(); // What class will consume the messages
                     });
 
                     // Event Consumers
-                    cfg.ReceiveEndpoint("BarQueue", c =>  // The interface name = the queue name
+                    cfg.ReceiveEndpoint<IBarEvent>(c =>  // The interface name = the queue name
                     {
                         c.Consumer<BarEventConsumer>(); // What class will consume the messages
                     });
 
-                    cfg.ReceiveEndpoint("snooper", c =>  // The interface = the queue name
-                    {
-                        c.Consumer<AnotherBarEventConsumer>(); // What class will consume the messages
-                    });
-
-
+                    //cfg.ReceiveEndpoint("manual_queue", c =>  // The interface = the queue name
+                    //{
+                    //    c.Consumer<AnotherBarEventConsumer>(); // What class will consume the messages
+                    //});
                 });
             return bus;
         }

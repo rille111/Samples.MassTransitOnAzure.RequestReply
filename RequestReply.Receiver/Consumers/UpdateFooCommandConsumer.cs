@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using MassTransit;
 using RequestReply.Shared;
 
-namespace RequestReply.Receiver
+namespace RequestReply.Receiver.Consumers
 {
     public class UpdateFooCommandConsumer : IConsumer<UpdateFooCommand>
     {
