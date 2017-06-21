@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MassTransit;
 using Messaging.Infrastructure.ServiceBus.BusConfigurator;
-using RequestReply.Shared;
 using RequestReply.Shared.Messages;
 using RequestReply.Shared.Tools;
 
@@ -62,44 +60,57 @@ namespace RequestReply.Sender
 
         private async void btnPublishEvent_Click(object sender, EventArgs e)
         {
-            await _azureBus.Publish(new BarEvent
+            try
             {
-                Id = Guid.NewGuid(),
-                Text = txtMessageText.Text,
-                TimeStampSent = DateTime.Now
-            });
+                await _azureBus.Publish(new BarEvent
+                {
+                    Id = Guid.NewGuid(),
+                    Text = txtMessageText.Text,
+                    TimeStampSent = DateTime.Now
+                });
 
-            txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(BarEvent)}) sent OK \n");
-
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(BarEvent)}) sent OK \n");
+            }
+            catch (Exception ex)
+            {
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+            }
         }
 
         private async void btnSendCommand_Click(object sender, EventArgs e)
         {
-            var commandSendpoint = await _azureBus.GetSendEndpointAsync<IUpdateFooCommand>();
-
-            // Create a command to send, depending on what is chosen in the dropdown.
-            // Note that the object is still declared as IUpdateFooCommand which will have its effect on Masstransit when sending.
-            IUpdateFooCommand commandToSend = CreateCommandBasedOnDropdown();
-            commandToSend.Id = Guid.NewGuid();
-            commandToSend.Text = txtMessageText.Text;
-            commandToSend.TimeStampSent = DateTime.Now;
-
-            // Note: Best is NOT to Send as an interface, but the concrete type.
-            // Because if sent as an interface - Consumers would only understand and be able to consume that very interface, not any concrete class,
-            // And that would be an error that could lead to messages being sent to the _skipped queue.
-            switch (drpCommandType.SelectedIndex)
+            try
             {
-                case 0:
-                    await commandSendpoint.Send((UpdateFooCommand)commandToSend); 
-                    break;
-                case 1:
-                    await commandSendpoint.Send((UpdateFooVersion2Command)commandToSend);
-                    break;
-                default:
-                    throw new NotImplementedException();
-            }
+                var commandSendpoint = await _azureBus.GetSendEndpointAsync<IUpdateFooCommand>();
 
-            txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateFooCommand)}) sent OK \n");
+                // Create a command to send, depending on what is chosen in the dropdown.
+                // Note that the object is still declared as IUpdateFooCommand which will have its effect on Masstransit when sending.
+                IUpdateFooCommand commandToSend = CreateCommandBasedOnDropdown();
+                commandToSend.Id = Guid.NewGuid();
+                commandToSend.Text = txtMessageText.Text;
+                commandToSend.TimeStampSent = DateTime.Now;
+
+                // Note: Best is NOT to Send as an interface, but the concrete type.
+                // Because if sent as an interface - Consumers would only understand and be able to consume that very interface, not any concrete class,
+                // And that would be an error that could lead to messages being sent to the _skipped queue.
+                switch (drpCommandType.SelectedIndex)
+                {
+                    case 0:
+                        await commandSendpoint.Send((UpdateFooCommand)commandToSend);
+                        break;
+                    case 1:
+                        await commandSendpoint.Send((UpdateFooVersion2Command)commandToSend);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateFooCommand)}) sent OK \n");
+            }
+            catch (Exception ex)
+            {
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+            }
         }
 
         private async void btnSendRequestReply_Click(object sender, EventArgs e)
