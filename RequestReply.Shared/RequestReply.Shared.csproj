@@ -45,11 +45,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Messages\BarEvent.cs" />
-    <Compile Include="Messages\HelloRequest.cs" />
+    <Compile Include="Messages\HelloQuery.cs" />
     <Compile Include="Messages\HelloResponse.cs" />
     <Compile Include="Messages\IBarEvent.cs" />
     <Compile Include="Messages\IUpdateFooCommand.cs" />
     <Compile Include="Messages\UpdateFooVersion2Command.cs" />
+    <Compile Include="Tools\GlobalVariables.cs" />
     <Compile Include="Tools\JsonConfigFileReader.cs" />
     <Compile Include="Messages\UpdateFooCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

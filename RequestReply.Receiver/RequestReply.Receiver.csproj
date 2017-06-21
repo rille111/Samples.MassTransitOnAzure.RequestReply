@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Consumers\AnotherBarEventConsumer.cs" />
+    <Compile Include="Consumers\HelloQueryConsumer.cs" />
     <Compile Include="Consumers\IUpdateFooCommandConsumer.cs" />
     <Compile Include="Consumers\UpdateFooCommandVersion2Consumer.cs" />
     <Compile Include="Program.cs" />

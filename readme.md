@@ -72,6 +72,12 @@ Starting the bus is not required or even recommended.
 
 So - the resulting topic will be named as the type being sent, be that a class or interface - you decide.
 
+h2. Sending (Queries)
+**When** only using `_azureBus.GetSendEndpointAsync<IUpdateFooCommand>();`
+**And** sending with `commandSendpoint.Send(new UpdateFooCommand(..));`
+**Then** only a queue `iupdatefoocommand` gets created (because of the send endpoint, this is our own code doing it otherwise you must define an Uri and that's a lotta work)
+
+
 h2. Consuming (Receiving BOTH Commands and Events)
 
 A lot more happens when setting up consumers, to ensure messages get routed correctly using the MassTransit topology.

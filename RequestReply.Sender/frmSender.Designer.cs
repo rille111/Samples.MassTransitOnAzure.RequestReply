@@ -121,6 +121,12 @@
             // 
             // txtLog
             // 
+            this.txtLog.AcceptsReturn = true;
+            this.txtLog.AcceptsTab = true;
+            this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtLog.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.txtLog.Location = new System.Drawing.Point(14, 311);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";

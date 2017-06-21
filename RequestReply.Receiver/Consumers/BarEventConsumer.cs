@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MassTransit;
-using RequestReply.Shared;
 using RequestReply.Shared.Messages;
 
 namespace RequestReply.Receiver.Consumers

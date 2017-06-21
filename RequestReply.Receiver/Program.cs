@@ -47,10 +47,19 @@ namespace RequestReply.Receiver
                         c.Consumer<BarEventConsumer>(); // What class will consume the messages
                     });
 
+                    // Request Reply Consumers
+                    cfg.ReceiveEndpoint<HelloQuery>(c =>  // The interface name = the queue name
+                    {
+                        c.Consumer<HelloQueryConsumer>(); // What class will consume the messages
+                    });
+
+                    // Manual Consumers
                     //cfg.ReceiveEndpoint("manual_queue", c =>  // The interface = the queue name
                     //{
                     //    c.Consumer<AnotherBarEventConsumer>(); // What class will consume the messages
                     //});
+
+
                 });
             return bus;
         }

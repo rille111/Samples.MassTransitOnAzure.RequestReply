@@ -41,13 +41,18 @@ namespace RequestReply.Sender
             drpCommandType.SelectedIndex = 0;
         }
 
-        private void StartAzureBus()
+        private async void StartAzureBus()
         {
             try
             {
                 var connstring = new JsonConfigFileReader().GetValue("AzureSbConnectionString");
                 _azureBus = AzureSbBusConfigurator.CreateBus(connstring);
                 txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> AzureSB Bus started. " + connstring + " \n");
+
+                // This is necessary in order to receive replies from the request/reply mechanism.
+                await _azureBus.StartAsync();
+                
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Bus started. Bus.Adress: {_azureBus.Address} \n");
             }
             catch (Exception ex)
             {
@@ -97,9 +102,25 @@ namespace RequestReply.Sender
             txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateFooCommand)}) sent OK \n");
         }
 
-        private void btnSendRequestReply_Click(object sender, EventArgs e)
+        private async void btnSendRequestReply_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // 1. Either create a client manually, by figuring out the address you want the replies to:
+                //var helloRequestUri = new Uri(_azureBus.ExtractBusAddress() + "/" + nameof(HelloQuery));
+                //var client = _azureBus.CreateRequestClient<HelloQuery, HelloResponse>(helloRequestUri, TimeSpan.FromSeconds(5));
+
+                // 2. Or easier, use our code:
+                var client = _azureBus.CreateRequestClient<HelloQuery, HelloResponse>(TimeSpan.FromSeconds(5));
+
+                var response = await client.Request(new HelloQuery() { MyName = "John Doe" });
+
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Reply ({response.Counter}): {response.HelloText}\n" );
+            }
+            catch (Exception ex)
+            {
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception when doing Request/Reply. \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+            }
         }
 
         private IUpdateFooCommand CreateCommandBasedOnDropdown()
