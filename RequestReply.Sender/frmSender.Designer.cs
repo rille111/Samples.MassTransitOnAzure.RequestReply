@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnSend = new System.Windows.Forms.Button();
+            this.btnSendCommand = new System.Windows.Forms.Button();
             this.txtMessageText = new System.Windows.Forms.TextBox();
             this.drpTotalMessagesToSend = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -38,22 +38,26 @@
             this.label4 = new System.Windows.Forms.Label();
             this.txtLog = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnSendRequestReply = new System.Windows.Forms.Button();
+            this.drpCommandType = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnPublishEvent = new System.Windows.Forms.Button();
-            this.drpCommandType = new System.Windows.Forms.ComboBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
-            // btnSend
+            // btnSendCommand
             // 
-            this.btnSend.Location = new System.Drawing.Point(514, 22);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(75, 23);
-            this.btnSend.TabIndex = 0;
-            this.btnSend.Text = "Send!";
-            this.btnSend.UseVisualStyleBackColor = true;
-            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
+            this.btnSendCommand.Location = new System.Drawing.Point(514, 22);
+            this.btnSendCommand.Name = "btnSendCommand";
+            this.btnSendCommand.Size = new System.Drawing.Size(75, 23);
+            this.btnSendCommand.TabIndex = 0;
+            this.btnSendCommand.Text = "Send!";
+            this.btnSendCommand.UseVisualStyleBackColor = true;
+            this.btnSendCommand.Click += new System.EventHandler(this.btnSendCommand_Click);
             // 
             // txtMessageText
             // 
@@ -103,9 +107,8 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(271, 27);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(123, 13);
+            this.label3.Size = new System.Drawing.Size(0, 13);
             this.label3.TabIndex = 6;
-            this.label3.Text = "in each Command, using";
             // 
             // label4
             // 
@@ -118,32 +121,50 @@
             // 
             // txtLog
             // 
-            this.txtLog.Location = new System.Drawing.Point(12, 182);
+            this.txtLog.Location = new System.Drawing.Point(14, 311);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
-            this.txtLog.Size = new System.Drawing.Size(600, 170);
+            this.txtLog.Size = new System.Drawing.Size(616, 170);
             this.txtLog.TabIndex = 8;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.drpCommandType);
-            this.groupBox1.Controls.Add(this.btnSend);
+            this.groupBox1.Controls.Add(this.btnSendRequestReply);
             this.groupBox1.Controls.Add(this.drpTotalMessagesToSend);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.drpBatchSize);
-            this.groupBox1.Location = new System.Drawing.Point(14, 32);
+            this.groupBox1.Location = new System.Drawing.Point(20, 214);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(598, 59);
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Send Commands (UpdateFooCommand) using a Send Endpoint";
+            this.groupBox1.Text = "Send Request/Reply Commands";
+            // 
+            // btnSendRequestReply
+            // 
+            this.btnSendRequestReply.Location = new System.Drawing.Point(514, 22);
+            this.btnSendRequestReply.Name = "btnSendRequestReply";
+            this.btnSendRequestReply.Size = new System.Drawing.Size(75, 23);
+            this.btnSendRequestReply.TabIndex = 0;
+            this.btnSendRequestReply.Text = "Send!";
+            this.btnSendRequestReply.UseVisualStyleBackColor = true;
+            this.btnSendRequestReply.Click += new System.EventHandler(this.btnSendRequestReply_Click);
+            // 
+            // drpCommandType
+            // 
+            this.drpCommandType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.drpCommandType.FormattingEnabled = true;
+            this.drpCommandType.Location = new System.Drawing.Point(354, 22);
+            this.drpCommandType.Name = "drpCommandType";
+            this.drpCommandType.Size = new System.Drawing.Size(154, 21);
+            this.drpCommandType.TabIndex = 7;
             // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.btnPublishEvent);
-            this.groupBox2.Location = new System.Drawing.Point(14, 108);
+            this.groupBox2.Location = new System.Drawing.Point(20, 35);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(598, 55);
             this.groupBox2.TabIndex = 10;
@@ -160,20 +181,33 @@
             this.btnPublishEvent.UseVisualStyleBackColor = true;
             this.btnPublishEvent.Click += new System.EventHandler(this.btnPublishEvent_Click);
             // 
-            // drpCommandType
+            // groupBox3
             // 
-            this.drpCommandType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.drpCommandType.FormattingEnabled = true;
-            this.drpCommandType.Location = new System.Drawing.Point(396, 23);
-            this.drpCommandType.Name = "drpCommandType";
-            this.drpCommandType.Size = new System.Drawing.Size(102, 21);
-            this.drpCommandType.TabIndex = 7;
+            this.groupBox3.Controls.Add(this.drpCommandType);
+            this.groupBox3.Controls.Add(this.btnSendCommand);
+            this.groupBox3.Controls.Add(this.label6);
+            this.groupBox3.Location = new System.Drawing.Point(20, 120);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(598, 59);
+            this.groupBox3.TabIndex = 11;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Send Command";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(220, 26);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(130, 13);
+            this.label6.TabIndex = 6;
+            this.label6.Text = "Command Concrete Type:";
             // 
             // frmSender
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(615, 364);
+            this.ClientSize = new System.Drawing.Size(642, 493);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.txtLog);
@@ -184,6 +218,8 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -191,7 +227,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnSend;
+        private System.Windows.Forms.Button btnSendCommand;
         private System.Windows.Forms.TextBox txtMessageText;
         private System.Windows.Forms.ComboBox drpTotalMessagesToSend;
         private System.Windows.Forms.Label label1;
@@ -204,5 +240,8 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button btnPublishEvent;
         private System.Windows.Forms.ComboBox drpCommandType;
+        private System.Windows.Forms.Button btnSendRequestReply;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Label label6;
     }
 }

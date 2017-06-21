@@ -67,7 +67,7 @@ namespace RequestReply.Sender
 
         }
 
-        private async void btnSend_Click(object sender, EventArgs e)
+        private async void btnSendCommand_Click(object sender, EventArgs e)
         {
             var commandSendpoint = await _azureBus.GetSendEndpointAsync<IUpdateFooCommand>();
 
@@ -94,6 +94,11 @@ namespace RequestReply.Sender
             }
 
             txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateFooCommand)}) sent OK \n");
+        }
+
+        private void btnSendRequestReply_Click(object sender, EventArgs e)
+        {
+
         }
 
         private IUpdateFooCommand CreateCommandBasedOnDropdown()

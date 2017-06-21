@@ -1,3 +1,8 @@
+TODO:
+* Send an unknown command to a queue that has no consumers
+	* Attach fault consumers to catch those
+	* Think about logging .. Observer? Middleware?
+
 h1. Instructions
 
 * Make sure you have an AzureBus (Standard), copy the Shared access policy connection string to clipboard
@@ -143,5 +148,7 @@ h3. Scenarios
 h3. References
 
 http://docs.masstransit-project.com/en/latest/configuration/gotchas.html
-
 http://docs.masstransit-project.com/en/latest/overview/underthehood.html?highlight=_skipped
+http://masstransit-project.com/MassTransit/usage/request-response.html
+https://docs.microsoft.com/en-us/azure/service-bus-messaging/service-bus-dead-letter-queues
+https://github.com/MassTransit/Sample-RequestResponse
