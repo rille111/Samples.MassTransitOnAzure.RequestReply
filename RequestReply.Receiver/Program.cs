@@ -60,8 +60,6 @@ namespace RequestReply.Receiver
                     //{
                     //    c.Consumer<AnotherBarEventConsumer>(); // What class will consume the messages
                     //});
-
-
                 });
             return bus;
         }
