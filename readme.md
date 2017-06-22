@@ -34,7 +34,8 @@ The message is acknowledged and removed from the Queue when the Consume() method
 h2. Messages - Lifecycle
 
 * Messages are removed from the Queue when:
-	* The message is sent to a Consumer, and runs to Completion (Task.RanToCompletion).
+	* The message is sent to a Consumer, and runs to Completion (Task.RanToCompletion). 
+	* Until then - the message will be locked so that no other may consume it.
 * Messages are moved to the _skipped queue when
 	* When a receive endpoint gets a message but doesnt have any connected consumers
 	* When a receive endpoint gets a message type but doesnt have any connected consumers that can handle that type. (FooBarTwo gets sent, but we only have Consume<FooBar>)
@@ -51,7 +52,7 @@ h2. Messages - Lifecycle
 
 h2. Sending (Commands)
 
-Starting the bus is not required or even recommended.
+Starting the bus is not required
 
 **When** only using `_azureBus.GetSendEndpointAsync<IUpdateFooCommand>();`
 **And** sending with `commandSendpoint.Send(new UpdateFooCommand(..));`
@@ -60,9 +61,17 @@ Starting the bus is not required or even recommended.
 No topics will be created when sending commands.
 Sent Commands ONLY gets sent to the Queues directly, never the queues.
 
+h2. Sending (Queries)
+
+Starting the bus is not required
+
+**When** only using `_azureBus.GetSendEndpointAsync<IUpdateFooCommand>();`
+**And** sending with `commandSendpoint.Send(new UpdateFooCommand(..));`
+**Then** only a queue `iupdatefoocommand` gets created (because of the send endpoint, this is our own code doing it otherwise you must define an Uri and that's a lotta work)
+
 h2. Publishing (Events)
 
-Starting the bus is not required or even recommended.
+Starting the bus is not required
 
 **When** publishing an event (ie to a topic) with `await _azureBus.Publish<IBarEvent>(new BarEvent());`
 **Then** a topic-container with name `requestreply.shared` gets created 
@@ -72,13 +81,9 @@ Starting the bus is not required or even recommended.
 
 So - the resulting topic will be named as the type being sent, be that a class or interface - you decide.
 
-h2. Sending (Queries)
-**When** only using `_azureBus.GetSendEndpointAsync<IUpdateFooCommand>();`
-**And** sending with `commandSendpoint.Send(new UpdateFooCommand(..));`
-**Then** only a queue `iupdatefoocommand` gets created (because of the send endpoint, this is our own code doing it otherwise you must define an Uri and that's a lotta work)
+h2. Consuming (Receiving Commands and Events)
 
-
-h2. Consuming (Receiving BOTH Commands and Events)
+Starting the bus IS required
 
 A lot more happens when setting up consumers, to ensure messages get routed correctly using the MassTransit topology.
 A consumer only ever listens to a Queue, never a Topic. But! The consumer will STILL get messages from both a Topic and a Queue.
@@ -101,6 +106,17 @@ Knowing this, therefore a Sender/Bus can either
 
 Therefore, MassTransit ensures that you can from a Senders perspective either Send Commands, or Publish Events, and those messages would hit eventually home once anyone has ever set up a consumer.
 
+h2. Request-Reply (Send, Consume, and GetResponse)
+
+Starting the bus IS required (otherwise you will never get replies)
+
+**When** creating bus and initiating a `MessageRequestClient` with `serverbarscommand` as the Request type and `serverbarsresponse` as the Reply type
+**Then** only a queue `serverbarscommand` gets created 
+**And** replies will be sent to the temporary unique queue for that application/session
+
+In this scenario, the Sender must have its bus started in order to get a temporary unique queue, where the responses are sent to after sending a command or query.
+The queue where Requests are sent to, is either a string or the name of the actual request type, eg. `serverbarscommand` if you use our code.
+
 h2. Fails, exceptions and dead letters
 
 Queues have a 'deadletter' stash. Messages that cannot be delivered to any receiver, or messages that could not be processed, gets moved here.
@@ -110,7 +126,14 @@ Best is probably to use FaultConsumers and log exceptions and reasons to some ex
 
 h2. Gotchas and FYIS
 
-* Some times when starting up Consumers, messages that already are in the queue, don't get delivered?? Reason? Dunno! Can't reproduce right now.
+* Some times when starting up Consumers, messages that already are in the queue, don't get delivered - thats probably because they are locked
+	* One reason might be the application crashed/stopped in the middle of processing a command
+	* There may be other reasons
+
+* Messages when delivered to a Consumer, will be locked until :
+	* Method runs to completion, the message will be acknowledged and removed from the queue
+	* Lock expires (timeout) and the message will then be moved to ..?  TODO: TEST THIS!!
+	* Exception or fail, and message will be moved to dead letter or error or skipped 
 
 * It should be fine to create you own queue manually, and add subscription to topics. Just know that when adding consumers, those consumers will either use a queue that you specify,
 	but ALSO create topics that route to it. So be heedful of the naming!
@@ -121,6 +144,7 @@ h2. Gotchas and FYIS
 
 h3. Do's and Dont's
 
+* Do always start the bus if you intend on receiving messages in any way (request-reply or consuming, or listening to faults)
 * Do use Bus.Publish() if you ever want several Consumers catch the Messages, since those get posted to Topics
 * Do use middleware if you ALSO want other subscribers to catch the Messages, and post those to some Topic of choice, like "SomeCommandWasSentEvent"
 * Do make sure that each receive endpoint works against its own queue (inside an application) otherwise there will be trouble

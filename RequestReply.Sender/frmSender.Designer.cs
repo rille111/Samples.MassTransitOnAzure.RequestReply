@@ -68,7 +68,6 @@
             // 
             // drpTotalMessagesToSend
             // 
-            this.drpTotalMessagesToSend.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.drpTotalMessagesToSend.FormattingEnabled = true;
             this.drpTotalMessagesToSend.Location = new System.Drawing.Point(77, 24);
             this.drpTotalMessagesToSend.Name = "drpTotalMessagesToSend";
@@ -87,17 +86,17 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(130, 27);
+            this.label2.Location = new System.Drawing.Point(144, 27);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(79, 13);
+            this.label2.Size = new System.Drawing.Size(163, 13);
             this.label2.TabIndex = 4;
-            this.label2.Text = "with batches of";
+            this.label2.Text = "bars, with this many bars in each:";
             // 
             // drpBatchSize
             // 
-            this.drpBatchSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.drpBatchSize.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.drpBatchSize.FormattingEnabled = true;
-            this.drpBatchSize.Location = new System.Drawing.Point(210, 23);
+            this.drpBatchSize.Location = new System.Drawing.Point(313, 24);
             this.drpBatchSize.Name = "drpBatchSize";
             this.drpBatchSize.Size = new System.Drawing.Size(55, 21);
             this.drpBatchSize.TabIndex = 5;
@@ -130,6 +129,7 @@
             this.txtLog.Location = new System.Drawing.Point(14, 311);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
+            this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtLog.Size = new System.Drawing.Size(616, 170);
             this.txtLog.TabIndex = 8;
             // 
@@ -146,7 +146,7 @@
             this.groupBox1.Size = new System.Drawing.Size(598, 59);
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Send Request/Reply Commands";
+            this.groupBox1.Text = "Send Request/Reply Commands (ServeBarsCommand)";
             // 
             // btnSendRequestReply
             // 

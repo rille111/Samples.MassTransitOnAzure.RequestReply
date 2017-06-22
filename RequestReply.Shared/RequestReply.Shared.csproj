@@ -45,8 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Messages\BarEvent.cs" />
-    <Compile Include="Messages\HelloQuery.cs" />
-    <Compile Include="Messages\HelloResponse.cs" />
+    <Compile Include="Messages\ServeBarsCommand.cs" />
+    <Compile Include="Messages\ServeBarsResponse.cs" />
     <Compile Include="Messages\IBarEvent.cs" />
     <Compile Include="Messages\IUpdateFooCommand.cs" />
     <Compile Include="Messages\UpdateFooVersion2Command.cs" />
