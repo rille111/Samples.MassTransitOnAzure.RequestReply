@@ -14,6 +14,8 @@ namespace RequestReply.Sender
     public partial class frmSender : Form
     {
         private IBusControl _azureBus;
+        private ISendEndpoint _sagaSendPoint;
+        private Guid _correlationId;
 
         public frmSender()
         {
@@ -43,6 +45,7 @@ namespace RequestReply.Sender
                 // This is necessary in order to receive replies from the request/reply mechanism. 
                 // LAB: Try turn it off and see what happens when you send request/replies ..
                 await _azureBus.StartAsync();
+                _sagaSendPoint = await _azureBus.GetSendEndpointAsync("update_products_saga");
 
                 txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Bus started. Bus.Adress: {_azureBus.Address} \n");
             }
@@ -115,6 +118,89 @@ namespace RequestReply.Sender
             }
         }
 
+        private async void btnSagaStart_Click(object sender, EventArgs e)
+        {
+            _correlationId = Guid.NewGuid();
+            try
+            {
+                if (string.IsNullOrEmpty(txtSagaCorrelate.Text.Trim()))
+                    throw new ArgumentNullException($"{nameof(txtSagaCorrelate)}");
+
+                await _sagaSendPoint.Send(new StartUpdateProducts
+                {
+                    CorrelateUniqueName = txtSagaCorrelate.Text.Trim(),
+                    CorrelationId = _correlationId
+                });
+
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(StartUpdateProducts)}) sent OK \n");
+            }
+            catch (Exception ex)
+            {
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+            }
+        }
+
+        private async void btnSagaUpdateProducts_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var cmd = new UpdateProductsSequence();
+                cmd.CorrelateUniqueName = txtSagaCorrelate.Text.Trim();
+                cmd.CorrelationId = _correlationId;
+                cmd.Products.Add(new ProductData());
+                cmd.Products.Add(new ProductData());
+                cmd.Products.Add(new ProductData());
+                cmd.Products.Add(new ProductData());
+                cmd.Products.Add(new ProductData());
+
+                await _sagaSendPoint.Send(cmd);
+
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateProductsSequence)}) sent OK \n");
+            }
+            catch (Exception ex)
+            {
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+            }
+        }
+
+        private async void btnSagaRollback_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                await _sagaSendPoint.Send(new UpdateProductsRollback()
+                {
+                    CorrelateUniqueName = txtSagaCorrelate.Text.Trim(),
+                    CorrelationId = _correlationId
+                });
+
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateProductsRollback)}) sent OK \n");
+            }
+            catch (Exception ex)
+            {
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+            }
+        }
+
+        private async void btnSagaCommit_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                await _sagaSendPoint.Send(new UpdateProductsFinish
+                {
+                    CorrelateUniqueName = txtSagaCorrelate.Text.Trim(),
+                    CorrelationId = _correlationId
+                });
+
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateProductsFinish)}) sent OK \n");
+            }
+            catch (Exception ex)
+            {
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+            }
+        }
+
+        #region Helper methods (No need to look at this code)
+
         private void btnSendRequestReply_Click(object sender, EventArgs e)
         {
             try
@@ -172,8 +258,6 @@ namespace RequestReply.Sender
                 txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception when doing Request/Reply. \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
             }
         }
-
-        #region Helper methods (No need to look at this code)
 
         private void PopulateUiElements()
         {
@@ -235,23 +319,7 @@ namespace RequestReply.Sender
 
         #endregion
 
-        private async void btnStartSaga_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                var commandSendpoint = await _azureBus.GetSendEndpointAsync("update_products_saga");
-                await commandSendpoint.Send(new UpdateProductsCommand
-                {
-                    CommandUniqueName = "Rickard",
-                    CorrelationId = Guid.NewGuid()
-                });
 
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateProductsCommand)}) sent OK \n");
-            }
-            catch (Exception ex)
-            {
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
-            }
-        }
+
     }
 }

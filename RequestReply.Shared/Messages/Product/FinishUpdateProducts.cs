@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace RequestReply.Shared.Messages.Product
 {
-    public class StartUpdateProductsBatchCommand
+    public class FinishUpdateProducts
     {
+        public Guid CorrelationId { get; set; }
+        public string CorrelateUniqueName { get; set; }
+
     }
 }

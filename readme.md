@@ -19,17 +19,17 @@ h2. Tools
 h2. Conclusions
 
 **Queues** will receive the messages sent by using SendEndpoint.Send()
-**Temporary queues** are mostly only used for request/reply, faultreplies or routingslips (sagas) coordination - and can be ignored
+**Temporary queues** are mostly only used for request/reply, faultreplies or routingslips (sagas) coordination - and can otherwise be ignored.
 **Topics** will receive the messages send via Bus.Publish()
 **Consumers** tell what type they consume by code, and that will become the name of the Topic, and it becomes the Queue that they will listen on.
-**Consumers** will consume both Commands and Events because of how MassTransit works (see below).
-**Consumers** will only get message from queues. Topics forward messages to queues.
+**Consumers** will consume both Commands and Events because of how MassTransit works (see below), a nice feature actually.
+**Consumers** will only get message from queues. Topics forward messages to queues (im almost positive about this).
 **Subcription** Names are equal to the queue name that they forward to, configured up by MassTransit.
 **Queue Names** are the SendEndpoint/ReceiveEndpoint queue names (configured either as a string, or or the interface name if you're using our code - an extension method)
-**Parallell Execution** is on by default. That is - several consumers will run and handle messages in parallell in the same application. You can control this by configuring PrefetchCount.
-**Messages** that are sent to an endpoint that have consumers, but no consumer can understand the type, then MassTransit will move the messages to the _skipped queue.
+**Parallell Execution** is on by default. That is - several consumers will run and handle messages in parallell in the same application. You can control this by configuring PrefetchCount. I think.
+**Messages** that are sent to an endpoint that have consumers, but if no consumer can understand the type, then MassTransit will move the messages to the _skipped queue.
 
-The message is reserved and when it gets routed to some Consumer, and while the Consumer works - no other Consumer will get this message.
+The message is reserved and when it gets routed to some Consumer, and while the Consumer works - no other Consumer will get this message. (Lock)
 The message is acknowledged and removed from the Queue when the Consume() method runs to Completion (Task.RanToCompletion)
 
 h2. Messages - Lifecycle
@@ -43,9 +43,10 @@ h2. Messages - Lifecycle
 	* When there are several receive endpoints sharing the same queue, DONT DO THIS!
 	* When consumer doesn't know how to handle the message for whatever reason
 * Messages are moved to the _errors queue when:
-	* Only gets moved when the retry policy has been exhausted! Therefore: 
+	* When the retry policy has been exhausted! Therefore: 
 	* The Consume() Method throws an exception. 
 	* The Consume() does not run to Task.RanToCompletion.
+	* When a Saga gets an Event that is not expected for the current State
 * Messages get moved to the 'deadletter' stash when
 	* Messages have been in the Queue and it expires the configured queue TTL. Says so in the docs.
 	* MassTransit could potentially move messages here for other reasons
@@ -117,6 +118,14 @@ Starting the bus IS required (otherwise you will never get replies)
 
 In this scenario, the Sender must have its bus started in order to get a temporary unique queue, where the responses are sent to after sending a command or query.
 The queue where Requests are sent to, is either a string or the name of the actual request type, eg. `serverbarscommand` if you use our code.
+
+h2. Sagas
+
+Starting the bus is not required, unless you want to receive stuff from the Saga. (Replies for example)
+
+**When** working in a saga, the saga should have its own queue (endpoint), configured by a string or the saga type GetEndpoint<SagaName>
+**Then** you can send to this endpoint
+**And** you must receive from this endpoint
 
 h2. Fails, exceptions and dead letters
 
