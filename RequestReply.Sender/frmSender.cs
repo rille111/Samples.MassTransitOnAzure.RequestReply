@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using MassTransit;
 using Messaging.Infrastructure.ServiceBus.BusConfigurator;
 using RequestReply.Shared.Messages;
+using RequestReply.Shared.Messages.Product;
 using RequestReply.Shared.Tools;
 
 namespace RequestReply.Sender
@@ -42,7 +43,7 @@ namespace RequestReply.Sender
                 // This is necessary in order to receive replies from the request/reply mechanism. 
                 // LAB: Try turn it off and see what happens when you send request/replies ..
                 await _azureBus.StartAsync();
-                
+
                 txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Bus started. Bus.Adress: {_azureBus.Address} \n");
             }
             catch (Exception ex)
@@ -233,5 +234,24 @@ namespace RequestReply.Sender
         }
 
         #endregion
+
+        private async void btnStartSaga_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var commandSendpoint = await _azureBus.GetSendEndpointAsync("update_products_saga");
+                await commandSendpoint.Send(new UpdateProductsCommand
+                {
+                    CommandUniqueName = "Rickard",
+                    CorrelationId = Guid.NewGuid()
+                });
+
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateProductsCommand)}) sent OK \n");
+            }
+            catch (Exception ex)
+            {
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+            }
+        }
     }
 }

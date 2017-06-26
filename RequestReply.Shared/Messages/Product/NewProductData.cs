@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RequestReply.Shared.Messages.Product
 {
-    class NewProductData
+    public class NewProductData
     {
     }
 }

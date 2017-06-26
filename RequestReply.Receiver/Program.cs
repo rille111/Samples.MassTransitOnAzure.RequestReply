@@ -1,9 +1,11 @@
 ﻿using System;
+using Automatonymous;
 using MassTransit;
+using MassTransit.Saga;
 using Messaging.Infrastructure.ServiceBus.BusConfigurator;
 using RequestReply.Receiver.Consumers;
-using RequestReply.Shared;
 using RequestReply.Shared.Messages;
+using RequestReply.Shared.Messages.Product;
 using RequestReply.Shared.Tools;
 
 namespace RequestReply.Receiver
@@ -53,6 +55,14 @@ namespace RequestReply.Receiver
                     cfg.ReceiveEndpoint<ServeBarsCommand>(c =>  // The interface name = the queue name
                     {
                         c.Consumer<ServeBarsCommandConsumer>(); // What class will consume the messages
+                    });
+
+                    // Saga Consumer
+                    var machine = new UpdateProductsStateMachine();
+                    var updProductsSagaRepo = new InMemorySagaRepository<UpdateProductsSaga>();
+                    cfg.ReceiveEndpoint("update_products_saga", c =>
+                    {
+                        c.StateMachineSaga(machine, updProductsSagaRepo);
                     });
 
                     // Manual Consumers

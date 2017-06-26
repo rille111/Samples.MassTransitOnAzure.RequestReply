@@ -1,12 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RequestReply.Shared.Messages.Product
 {
-    class UpdateProductsCommand
+    public interface IUpdateProductsCommand
     {
+        string CommandUniqueName { get; set; }
+        Guid CorrelationId { get; set; }
+    }
+
+    public class UpdateProductsCommand : IUpdateProductsCommand
+    {
+        public Guid CorrelationId { get; set; }
+        public string CommandUniqueName { get; set; }
+
     }
 }

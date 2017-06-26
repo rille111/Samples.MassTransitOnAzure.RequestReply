@@ -44,9 +44,12 @@
             this.btnPublishEvent = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btnStartSaga = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSendCommand
@@ -126,11 +129,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLog.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.txtLog.Location = new System.Drawing.Point(14, 311);
+            this.txtLog.Location = new System.Drawing.Point(14, 396);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(616, 170);
+            this.txtLog.Size = new System.Drawing.Size(616, 184);
             this.txtLog.TabIndex = 8;
             // 
             // groupBox1
@@ -208,11 +211,32 @@
             this.label6.TabIndex = 6;
             this.label6.Text = "Command Concrete Type:";
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.btnStartSaga);
+            this.groupBox4.Location = new System.Drawing.Point(20, 311);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(598, 59);
+            this.groupBox4.TabIndex = 12;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Start ProductsUpdate Saga";
+            // 
+            // btnStartSaga
+            // 
+            this.btnStartSaga.Location = new System.Drawing.Point(6, 19);
+            this.btnStartSaga.Name = "btnStartSaga";
+            this.btnStartSaga.Size = new System.Drawing.Size(75, 23);
+            this.btnStartSaga.TabIndex = 0;
+            this.btnStartSaga.Text = "Start";
+            this.btnStartSaga.UseVisualStyleBackColor = true;
+            this.btnStartSaga.Click += new System.EventHandler(this.btnStartSaga_Click);
+            // 
             // frmSender
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(642, 493);
+            this.ClientSize = new System.Drawing.Size(642, 592);
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -226,6 +250,7 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -249,5 +274,7 @@
         private System.Windows.Forms.Button btnSendRequestReply;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Button btnStartSaga;
     }
 }

@@ -70,6 +70,7 @@
     <Compile Include="Messages\Product\StartUpdateProductsBatchCommand.cs" />
     <Compile Include="Messages\Product\UpdateProductsSaga.cs" />
     <Compile Include="Messages\Product\UpdateProductsCommand.cs" />
+    <Compile Include="Messages\Product\UpdateProductsStateMachine.cs" />
     <Compile Include="Messages\ServeBarsCommand.cs" />
     <Compile Include="Messages\ServeBarsResponse.cs" />
     <Compile Include="Messages\IBarEvent.cs" />
