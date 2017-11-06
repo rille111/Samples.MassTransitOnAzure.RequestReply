@@ -44,9 +44,17 @@
             this.btnPublishEvent = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.btnSagaCommit = new System.Windows.Forms.Button();
+            this.txtSagaCorrelate = new System.Windows.Forms.TextBox();
+            this.btnSagaRollback = new System.Windows.Forms.Button();
+            this.btnSagaUpdateProducts = new System.Windows.Forms.Button();
+            this.btnSagaStart = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSendCommand
@@ -126,11 +134,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLog.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.txtLog.Location = new System.Drawing.Point(14, 311);
+            this.txtLog.Location = new System.Drawing.Point(14, 396);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(616, 170);
+            this.txtLog.Size = new System.Drawing.Size(616, 184);
             this.txtLog.TabIndex = 8;
             // 
             // groupBox1
@@ -208,11 +216,83 @@
             this.label6.TabIndex = 6;
             this.label6.Text = "Command Concrete Type:";
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label5);
+            this.groupBox4.Controls.Add(this.btnSagaCommit);
+            this.groupBox4.Controls.Add(this.txtSagaCorrelate);
+            this.groupBox4.Controls.Add(this.btnSagaRollback);
+            this.groupBox4.Controls.Add(this.btnSagaUpdateProducts);
+            this.groupBox4.Controls.Add(this.btnSagaStart);
+            this.groupBox4.Location = new System.Drawing.Point(20, 293);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(598, 77);
+            this.groupBox4.TabIndex = 12;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Start ProductsUpdate Saga";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(185, 22);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(83, 13);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "Correlate Name:";
+            // 
+            // btnSagaCommit
+            // 
+            this.btnSagaCommit.Location = new System.Drawing.Point(514, 48);
+            this.btnSagaCommit.Name = "btnSagaCommit";
+            this.btnSagaCommit.Size = new System.Drawing.Size(69, 23);
+            this.btnSagaCommit.TabIndex = 15;
+            this.btnSagaCommit.Text = "Commit";
+            this.btnSagaCommit.UseVisualStyleBackColor = true;
+            this.btnSagaCommit.Click += new System.EventHandler(this.btnSagaCommit_Click);
+            // 
+            // txtSagaCorrelate
+            // 
+            this.txtSagaCorrelate.Location = new System.Drawing.Point(274, 19);
+            this.txtSagaCorrelate.Name = "txtSagaCorrelate";
+            this.txtSagaCorrelate.Size = new System.Drawing.Size(193, 20);
+            this.txtSagaCorrelate.TabIndex = 13;
+            // 
+            // btnSagaRollback
+            // 
+            this.btnSagaRollback.Location = new System.Drawing.Point(354, 48);
+            this.btnSagaRollback.Name = "btnSagaRollback";
+            this.btnSagaRollback.Size = new System.Drawing.Size(127, 23);
+            this.btnSagaRollback.TabIndex = 14;
+            this.btnSagaRollback.Text = "Rollback";
+            this.btnSagaRollback.UseVisualStyleBackColor = true;
+            this.btnSagaRollback.Click += new System.EventHandler(this.btnSagaRollback_Click);
+            // 
+            // btnSagaUpdateProducts
+            // 
+            this.btnSagaUpdateProducts.Location = new System.Drawing.Point(110, 48);
+            this.btnSagaUpdateProducts.Name = "btnSagaUpdateProducts";
+            this.btnSagaUpdateProducts.Size = new System.Drawing.Size(127, 23);
+            this.btnSagaUpdateProducts.TabIndex = 13;
+            this.btnSagaUpdateProducts.Text = "Update 5 products";
+            this.btnSagaUpdateProducts.UseVisualStyleBackColor = true;
+            this.btnSagaUpdateProducts.Click += new System.EventHandler(this.btnSagaUpdateProducts_Click);
+            // 
+            // btnSagaStart
+            // 
+            this.btnSagaStart.Location = new System.Drawing.Point(6, 48);
+            this.btnSagaStart.Name = "btnSagaStart";
+            this.btnSagaStart.Size = new System.Drawing.Size(75, 23);
+            this.btnSagaStart.TabIndex = 0;
+            this.btnSagaStart.Text = "Start";
+            this.btnSagaStart.UseVisualStyleBackColor = true;
+            this.btnSagaStart.Click += new System.EventHandler(this.btnSagaStart_Click);
+            // 
             // frmSender
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(642, 493);
+            this.ClientSize = new System.Drawing.Size(642, 592);
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -226,6 +306,8 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -249,5 +331,12 @@
         private System.Windows.Forms.Button btnSendRequestReply;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Button btnSagaStart;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button btnSagaCommit;
+        private System.Windows.Forms.TextBox txtSagaCorrelate;
+        private System.Windows.Forms.Button btnSagaRollback;
+        private System.Windows.Forms.Button btnSagaUpdateProducts;
     }
 }
