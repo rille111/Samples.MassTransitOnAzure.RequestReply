@@ -4,7 +4,9 @@ using Automatonymous;
 using MassTransit;
 using MassTransit.Saga;
 using Messaging.Infrastructure.ServiceBus.BusConfigurator;
+using RequestReply.Receiver.Consumers;
 using RequestReply.Receiver.Other;
+using RequestReply.Shared.Messages;
 using RequestReply.Shared.Messages.Product;
 using RequestReply.Shared.Tools;
 
@@ -81,27 +83,27 @@ namespace RequestReply.Receiver
                     // https://masstransit.readthedocs.io/en/latest/configuration/gotchas.html#how-to-setup-a-competing-consumer
                     // http://docs.masstransit-project.com/en/latest/overview/underthehood.html
 
-                    //// Command Consumers 
-                    //cfg.ReceiveEndpoint<IUpdateFooCommand>(c =>  // The interface = the queue name
-                    //{
-                    //    // LAB: Try turn all consumers off and see what happens when sending the commands ..
+                    // Command Consumers 
+                    cfg.ReceiveEndpoint<IUpdateFooCommand>(c =>  // The interface = the queue name
+                    {
+                        // LAB: Try turn all consumers off and see what happens when sending the commands ..
 
-                    //    c.Consumer<UpdateFooCommandConsumer>(); // What class will consume the messages
-                    //    c.Consumer<UpdateFooVersion2CommandConsumer>(); // What class will consume the messages
-                    //    c.Consumer<IUpdateFooCommandConsumer>(); // What class will consume the messages
-                    //});
+                        c.Consumer<UpdateFooCommandConsumer>(); // What class will consume the messages
+                        c.Consumer<UpdateFooVersion2CommandConsumer>(); // What class will consume the messages
+                        c.Consumer<IUpdateFooCommandConsumer>(); // What class will consume the messages
+                    });
 
-                    //// Event Consumers
-                    //cfg.ReceiveEndpoint<IBarEvent>(c =>  // The interface name = the queue name
-                    //{
-                    //    c.Consumer<BarEventConsumer>(); // What class will consume the messages
-                    //});
+                    // Event Consumers
+                    cfg.ReceiveEndpoint<IBarEvent>(c =>  // The interface name = the queue name
+                    {
+                        c.Consumer<BarEventConsumer>(); // What class will consume the messages
+                    });
 
-                    //// Request Reply Consumers
-                    //cfg.ReceiveEndpoint<ServeBarsCommand>(c =>  // The interface name = the queue name
-                    //{
-                    //    c.Consumer<ServeBarsCommandConsumer>(); // What class will consume the messages
-                    //});
+                    // Request Reply Consumers
+                    cfg.ReceiveEndpoint<ServeBarsCommand>(c =>  // The interface name = the queue name
+                    {
+                        c.Consumer<ServeBarsCommandConsumer>(); // What class will consume the messages
+                    });
 
                     // Saga Consumers
                     _machine = new UpdateProductsStateMachine();
