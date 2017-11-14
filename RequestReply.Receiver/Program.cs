@@ -44,7 +44,7 @@ namespace RequestReply.Receiver
                     foreach (var corrGuid in correlationGuids)
                     {
                         var saga = _updProductsSagaRepo[corrGuid];
-                        Console.Out.WriteLineAsync($"Saga[{corrGuid}], State: {saga.Instance.CurrentState}");
+                        Console.Out.WriteLineAsync($"Saga[{corrGuid}], State: {saga.Instance.CurrentState}, SomethingUnique: {saga.Instance.SomethingUnique}");
                     }
                 }
                 else
@@ -104,6 +104,11 @@ namespace RequestReply.Receiver
                     {
                         c.Consumer<UpdateProductsStartedEventConsumer>(); 
                     });
+                    cfg.ReceiveEndpoint<IUpdateProductsBatchCommand>(c =>
+                    {
+                        c.Consumer<UpdateProductsBatchCommandConsumer>();
+                    });
+
 
                     // Request Reply Consumers
                     cfg.ReceiveEndpoint<ServeBarsCommand>(c =>  // The interface name = the queue name
@@ -115,8 +120,17 @@ namespace RequestReply.Receiver
                     _machine = new UpdateProductsStateMachine();
                     _updProductsSagaRepo = new InMemorySagaRepository<UpdateProductsSaga>();
 
+
                     // It looks like all messages related to the saga must be sent to the same queue? But what if we can't control this? (Look it up)
-                    cfg.ReceiveEndpoint(Configuration.QueueNameForStartingTheSaga, c =>
+                    cfg.ReceiveEndpoint($"{nameof(IStartUpdatingProductsCommand)}", c =>
+                    {
+                        c.StateMachineSaga(_machine, _updProductsSagaRepo);
+                    });
+                    cfg.ReceiveEndpoint($"{nameof(ICommitUpdatingProductsCommand)}", c =>
+                    {
+                        c.StateMachineSaga(_machine, _updProductsSagaRepo);
+                    });
+                    cfg.ReceiveEndpoint($"{nameof(IRollbackUpdatingProductsCommand)}", c =>
                     {
                         c.StateMachineSaga(_machine, _updProductsSagaRepo);
                     });

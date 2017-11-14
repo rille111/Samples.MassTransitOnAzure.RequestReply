@@ -65,14 +65,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FooBar.Messages\BarEvent.cs" />
-    <Compile Include="UpdateProducts.Saga.Config\Configuration.cs" />
-    <Compile Include="UpdateProducts.Saga.Messages\FinishUpdateProducts.cs" />
-    <Compile Include="UpdateProducts.Saga.Messages\UpdateProductsFinish.cs" />
-    <Compile Include="UpdateProducts.Saga.Messages\UpdateProductsRollback.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\CommitUpdatingProductsCommand.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\RollbackUpdatingProductsCommand.cs" />
     <Compile Include="UpdateProducts.Saga.Messages\UpdateProductsStartedEvent.cs" />
     <Compile Include="UpdateProducts.Saga\UpdateProductsSaga.cs" />
-    <Compile Include="UpdateProducts.Saga.Messages\StartUpdateProducts.cs" />
-    <Compile Include="UpdateProducts.Saga.Messages\UpdateProductsSequence.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\StartUpdatingProductsCommand.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\UpdateProductsBatchCommand.cs" />
     <Compile Include="UpdateProducts.Saga\UpdateProductsStateMachine.cs" />
     <Compile Include="FooBar.Messages\ServeBarsCommand.cs" />
     <Compile Include="FooBar.Messages\ServeBarsResponse.cs" />

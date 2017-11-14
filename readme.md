@@ -2,7 +2,7 @@ TODO:
 * Send an unknown command to a queue that has no consumers
 	* Attach fault consumers to catch those
 	* Think about logging .. Observer? Middleware?
-* Sometimes when starting the bus .. it doesnt get started but seems to work anyway. I think this is because of async await in Console applications.
+* Dropdown with Started sagas that you can choose from and batch updates to
 
 h1. Instructions
 

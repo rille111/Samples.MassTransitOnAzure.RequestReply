@@ -10,12 +10,16 @@ using RequestReply.Shared.UpdateProducts.Saga.Messages;
 
 namespace RequestReply.Sender
 {
-    // ReSharper disable once InconsistentNaming
+    // ReSharper disable InconsistentNaming
+    // ReSharper disable UseObjectOrCollectionInitializer
     public partial class frmSender : Form
     {
         private IBusControl _azureBus;
-        private ISendEndpoint _sagaSendPoint;
         private Guid _correlationId;
+        private ISendEndpoint _sagaUpdateProductsBatchSendPoint;
+        private ISendEndpoint _sagaStartSendpoint;
+        private ISendEndpoint _sagaRollbackSendPoint;
+        private ISendEndpoint _sagaCommitSendPoint;
 
         public frmSender()
         {
@@ -46,8 +50,10 @@ namespace RequestReply.Sender
                 // LAB: Try turn it off and see what happens when you send request/replies ..
                 await _azureBus.StartAsync();
 
-                // It looks like all messages related to the saga must be sent to the same queue? But what if we can't control this? (Look it up)
-                _sagaSendPoint = await _azureBus.GetSendEndpointAsync(Configuration.QueueNameForStartingTheSaga);
+                _sagaStartSendpoint = await _azureBus.GetSendEndpointAsync<IStartUpdatingProductsCommand>();
+                _sagaUpdateProductsBatchSendPoint = await _azureBus.GetSendEndpointAsync<IUpdateProductsBatchCommand>();
+                _sagaRollbackSendPoint = await _azureBus.GetSendEndpointAsync<IRollbackUpdatingProductsCommand>();
+                _sagaCommitSendPoint = await _azureBus.GetSendEndpointAsync<ICommitUpdatingProductsCommand>();
 
                 txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Bus started. Bus.Adress: {_azureBus.Address} \n");
             }
@@ -128,13 +134,15 @@ namespace RequestReply.Sender
                 if (string.IsNullOrEmpty(txtSagaCorrelate.Text.Trim()))
                     throw new ArgumentNullException($"{nameof(txtSagaCorrelate)}");
 
-                await _sagaSendPoint.Send(new StartUpdateProducts
+                await _sagaStartSendpoint.Send(new StartUpdatingProductsCommand
                 {
-                    CorrelateUniqueName = txtSagaCorrelate.Text.Trim(),
+                    // We need *something* pretty unique to correlate against
+                    UniqueText = txtSagaCorrelate.Text.Trim(),
+                    // If the Saga-starting message is under your control, you can simplify things by generating your own CorrelationId
                     CorrelationId = _correlationId
                 });
 
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(StartUpdateProducts)}) sent OK \n");
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(StartUpdatingProductsCommand)}) sent OK \n");
             }
             catch (Exception ex)
             {
@@ -146,8 +154,9 @@ namespace RequestReply.Sender
         {
             try
             {
-                var cmd = new UpdateProductsSequence();
-                cmd.CorrelateUniqueName = txtSagaCorrelate.Text.Trim();
+                // ReSharper disable once UseObjectOrCollectionInitializer
+                var cmd = new UpdateProductsBatchCommand();
+                //cmd. = txtSagaCorrelate.Text.Trim();
                 cmd.CorrelationId = _correlationId;
                 cmd.Products.Add(new ProductData());
                 cmd.Products.Add(new ProductData());
@@ -155,9 +164,9 @@ namespace RequestReply.Sender
                 cmd.Products.Add(new ProductData());
                 cmd.Products.Add(new ProductData());
 
-                await _sagaSendPoint.Send(cmd);
+                await _sagaUpdateProductsBatchSendPoint.Send(cmd);
 
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateProductsSequence)}) sent OK \n");
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateProductsBatchCommand)}) sent OK \n");
             }
             catch (Exception ex)
             {
@@ -169,13 +178,12 @@ namespace RequestReply.Sender
         {
             try
             {
-                await _sagaSendPoint.Send(new UpdateProductsRollback()
+                await _sagaRollbackSendPoint.Send(new RollbackUpdatingProductsCommand()
                 {
-                    CorrelateUniqueName = txtSagaCorrelate.Text.Trim(),
                     CorrelationId = _correlationId
                 });
 
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateProductsRollback)}) sent OK \n");
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(RollbackUpdatingProductsCommand)}) sent OK \n");
             }
             catch (Exception ex)
             {
@@ -187,13 +195,12 @@ namespace RequestReply.Sender
         {
             try
             {
-                await _sagaSendPoint.Send(new UpdateProductsFinish
+                await _sagaCommitSendPoint.Send(new CommitUpdatingProductsCommand
                 {
-                    CorrelateUniqueName = txtSagaCorrelate.Text.Trim(),
                     CorrelationId = _correlationId
                 });
 
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateProductsFinish)}) sent OK \n");
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(CommitUpdatingProductsCommand)}) sent OK \n");
             }
             catch (Exception ex)
             {
@@ -253,7 +260,7 @@ namespace RequestReply.Sender
                 txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Sent {totalBarsSent} Commands, now waiting for all to complete ..\n");
 
                 // Wait for all to complete
-                Task.WaitAll();
+                Task.WaitAll(requestTasks.ToArray());
             }
             catch (Exception ex)
             {

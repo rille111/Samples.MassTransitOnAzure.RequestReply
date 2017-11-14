@@ -9,7 +9,7 @@ namespace RequestReply.Receiver.Saga.Consumers
     {
         public async Task Consume(ConsumeContext<UpdateProductsStartedEvent> context)
         {
-            await Console.Out.WriteLineAsync($"{nameof(UpdateProductsStartedEventConsumer)} Received. UniqueName: {context.Message.UniqueName}, CorrelationId: {context.CorrelationId}");
+            await Console.Out.WriteLineAsync($"{nameof(UpdateProductsStartedEvent)} Received, CorrelationId: {context.CorrelationId}");
         }
     }
 }

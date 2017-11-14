@@ -90,6 +90,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FooBar.Consumers\BarEventConsumer.cs" />
     <Compile Include="FooBar.Consumers\UpdateFooCommandConsumer.cs" />
+    <Compile Include="Saga.Consumers\UpdateProductsBatchCommandConsumer.cs" />
     <Compile Include="Saga.Consumers\UpdateProductsStartedEventConsumer.cs" />
   </ItemGroup>
   <ItemGroup>

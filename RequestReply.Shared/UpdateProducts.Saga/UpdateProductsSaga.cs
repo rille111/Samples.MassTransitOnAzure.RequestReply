@@ -3,17 +3,16 @@ using Automatonymous;
 
 namespace RequestReply.Shared.UpdateProducts.Saga
 {
+    /// <inheritdoc />
     /// <summary>
     /// The UpdateProductsSaga State. This is what gets stored in the repo. It contains all the different States
     /// </summary>
     public class UpdateProductsSaga : SagaStateMachineInstance
     {
-        /// <summary>
-        /// Don't change or touch.
-        /// </summary>
+        /// <inheritdoc />
         public Guid CorrelationId { get; set; }
 
-        public string UniqueName { get; set; }
+        public string SomethingUnique { get; set; }
 
         /// <summary>
         /// Auto* uses this to keep track of the current state, don't touch!!
