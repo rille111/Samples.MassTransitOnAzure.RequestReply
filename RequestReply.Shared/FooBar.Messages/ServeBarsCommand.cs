@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RequestReply.Shared.Messages
+namespace RequestReply.Shared.FooBar.Messages
 {
     /// <summary>
     /// One command containing a number of bars to serve to some consumer..

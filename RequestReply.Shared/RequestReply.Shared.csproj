@@ -64,23 +64,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Messages\BarEvent.cs" />
-    <Compile Include="Messages\Product\FinishUpdateProducts.cs" />
-    <Compile Include="Messages\Product\ProductData.cs" />
-    <Compile Include="Messages\Product\UpdateProductsFinish.cs" />
-    <Compile Include="Messages\Product\UpdateProductsRollback.cs" />
-    <Compile Include="Messages\Product\UpdateProductsSaga.cs" />
-    <Compile Include="Messages\Product\StartUpdateProducts.cs" />
-    <Compile Include="Messages\Product\UpdateProductsSequence.cs" />
-    <Compile Include="Messages\Product\UpdateProductsStateMachine.cs" />
-    <Compile Include="Messages\ServeBarsCommand.cs" />
-    <Compile Include="Messages\ServeBarsResponse.cs" />
-    <Compile Include="Messages\IBarEvent.cs" />
-    <Compile Include="Messages\IUpdateFooCommand.cs" />
-    <Compile Include="Messages\UpdateFooVersion2Command.cs" />
-    <Compile Include="Tools\GlobalVariables.cs" />
-    <Compile Include="Tools\JsonConfigFileReader.cs" />
-    <Compile Include="Messages\UpdateFooCommand.cs" />
+    <Compile Include="FooBar.Messages\BarEvent.cs" />
+    <Compile Include="UpdateProducts.Saga.Config\Configuration.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\FinishUpdateProducts.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\UpdateProductsFinish.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\UpdateProductsRollback.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\UpdateProductsStartedEvent.cs" />
+    <Compile Include="UpdateProducts.Saga\UpdateProductsSaga.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\StartUpdateProducts.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\UpdateProductsSequence.cs" />
+    <Compile Include="UpdateProducts.Saga\UpdateProductsStateMachine.cs" />
+    <Compile Include="FooBar.Messages\ServeBarsCommand.cs" />
+    <Compile Include="FooBar.Messages\ServeBarsResponse.cs" />
+    <Compile Include="FooBar.Messages\IBarEvent.cs" />
+    <Compile Include="FooBar.Messages\IUpdateFooCommand.cs" />
+    <Compile Include="FooBar.Messages\UpdateFooVersion2Command.cs" />
+    <Compile Include="Shared.Tools\GlobalVariables.cs" />
+    <Compile Include="Shared.Tools\JsonConfigFileReader.cs" />
+    <Compile Include="FooBar.Messages\UpdateFooCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +98,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

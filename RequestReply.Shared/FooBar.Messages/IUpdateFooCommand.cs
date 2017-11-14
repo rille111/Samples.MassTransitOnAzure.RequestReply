@@ -1,6 +1,6 @@
 using System;
 
-namespace RequestReply.Shared.Messages
+namespace RequestReply.Shared.FooBar.Messages
 {
     public interface IUpdateFooCommand
     {

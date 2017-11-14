@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using MassTransit;
-using RequestReply.Shared.Messages;
+using RequestReply.Shared.FooBar.Messages;
 
-namespace RequestReply.Receiver.Consumers
+namespace RequestReply.Receiver.FooBar.Consumers
 {
     public class BarEventConsumer : IConsumer<BarEvent>
     {

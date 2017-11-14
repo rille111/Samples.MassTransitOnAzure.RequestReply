@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using MassTransit;
 
-namespace RequestReply.Shared.Messages.Product
+namespace RequestReply.Shared.UpdateProducts.Saga.Messages
 {
     public class UpdateProductsSequence
     {
@@ -14,5 +15,10 @@ namespace RequestReply.Shared.Messages.Product
         {
             this.Products = new List<ProductData>();
         }
+    }
+
+    public class ProductData
+    {
+        public Guid ProductId => NewId.NextGuid();
     }
 }

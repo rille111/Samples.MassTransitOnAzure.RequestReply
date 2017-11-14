@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Newtonsoft.Json.Linq;
 
-namespace RequestReply.Shared.Tools
+namespace RequestReply.Shared.Shared.Tools
 {
     public class JsonConfigFileReader
     {

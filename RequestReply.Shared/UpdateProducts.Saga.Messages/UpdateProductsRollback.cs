@@ -1,6 +1,6 @@
 using System;
 
-namespace RequestReply.Shared.Messages.Product
+namespace RequestReply.Shared.UpdateProducts.Saga.Messages
 {
     public class UpdateProductsRollback
     {

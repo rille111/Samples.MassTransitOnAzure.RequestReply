@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace RequestReply.Shared.Messages.Product
+namespace RequestReply.Shared.UpdateProducts.Saga.Messages
 {
-    public class UpdateProductsFinish
+    public class StartUpdateProducts
     {
         public Guid CorrelationId { get; set; }
         public string CorrelateUniqueName { get; set; }
-
     }
 }

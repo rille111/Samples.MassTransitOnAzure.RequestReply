@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using MassTransit;
 
-namespace RequestReply.Receiver.Other
+namespace RequestReply.Receiver.MassTransit.Observers
 {
     public class ReceiveObserver :
         IReceiveObserver

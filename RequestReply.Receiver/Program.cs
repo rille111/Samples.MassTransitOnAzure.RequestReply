@@ -4,11 +4,13 @@ using Automatonymous;
 using MassTransit;
 using MassTransit.Saga;
 using Messaging.Infrastructure.ServiceBus.BusConfigurator;
-using RequestReply.Receiver.Consumers;
-using RequestReply.Receiver.Other;
-using RequestReply.Shared.Messages;
-using RequestReply.Shared.Messages.Product;
-using RequestReply.Shared.Tools;
+using RequestReply.Receiver.FooBar.Consumers;
+using RequestReply.Receiver.MassTransit.Observers;
+using RequestReply.Receiver.Saga.Consumers;
+using RequestReply.Shared.FooBar.Messages;
+using RequestReply.Shared.Shared.Tools;
+using RequestReply.Shared.UpdateProducts.Saga;
+using RequestReply.Shared.UpdateProducts.Saga.Messages;
 
 namespace RequestReply.Receiver
 {
@@ -98,6 +100,10 @@ namespace RequestReply.Receiver
                     {
                         c.Consumer<BarEventConsumer>(); // What class will consume the messages
                     });
+                    cfg.ReceiveEndpoint<IUpdateProductsStartedEvent>(c =>  
+                    {
+                        c.Consumer<UpdateProductsStartedEventConsumer>(); 
+                    });
 
                     // Request Reply Consumers
                     cfg.ReceiveEndpoint<ServeBarsCommand>(c =>  // The interface name = the queue name
@@ -109,7 +115,8 @@ namespace RequestReply.Receiver
                     _machine = new UpdateProductsStateMachine();
                     _updProductsSagaRepo = new InMemorySagaRepository<UpdateProductsSaga>();
 
-                    cfg.ReceiveEndpoint("update_products_saga", c =>
+                    // It looks like all messages related to the saga must be sent to the same queue? But what if we can't control this? (Look it up)
+                    cfg.ReceiveEndpoint(Configuration.QueueNameForStartingTheSaga, c =>
                     {
                         c.StateMachineSaga(_machine, _updProductsSagaRepo);
                     });

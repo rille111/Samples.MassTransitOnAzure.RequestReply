@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MassTransit;
 using Messaging.Infrastructure.ServiceBus.BusConfigurator;
-using RequestReply.Shared.Messages;
-using RequestReply.Shared.Messages.Product;
-using RequestReply.Shared.Tools;
+using RequestReply.Shared.FooBar.Messages;
+using RequestReply.Shared.Shared.Tools;
+using RequestReply.Shared.UpdateProducts.Saga.Messages;
 
 namespace RequestReply.Sender
 {
@@ -45,7 +45,9 @@ namespace RequestReply.Sender
                 // This is necessary in order to receive replies from the request/reply mechanism. 
                 // LAB: Try turn it off and see what happens when you send request/replies ..
                 await _azureBus.StartAsync();
-                _sagaSendPoint = await _azureBus.GetSendEndpointAsync("update_products_saga");
+
+                // It looks like all messages related to the saga must be sent to the same queue? But what if we can't control this? (Look it up)
+                _sagaSendPoint = await _azureBus.GetSendEndpointAsync(Configuration.QueueNameForStartingTheSaga);
 
                 txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Bus started. Bus.Adress: {_azureBus.Address} \n");
             }

@@ -1,10 +1,10 @@
 ﻿using System;
 using Automatonymous;
 
-namespace RequestReply.Shared.Messages.Product
+namespace RequestReply.Shared.UpdateProducts.Saga
 {
     /// <summary>
-    /// The UpdateProductsSaga State. This is what gets stored in the repo.
+    /// The UpdateProductsSaga State. This is what gets stored in the repo. It contains all the different States
     /// </summary>
     public class UpdateProductsSaga : SagaStateMachineInstance
     {

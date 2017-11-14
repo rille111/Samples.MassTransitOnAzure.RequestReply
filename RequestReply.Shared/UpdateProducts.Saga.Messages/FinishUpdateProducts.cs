@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace RequestReply.Shared.Messages.Product
+namespace RequestReply.Shared.UpdateProducts.Saga.Messages
 {
     public class FinishUpdateProducts
     {

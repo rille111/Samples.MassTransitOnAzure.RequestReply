@@ -81,15 +81,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Consumers\AnotherBarEventConsumer.cs" />
-    <Compile Include="Consumers\ServeBarsCommandConsumer.cs" />
-    <Compile Include="Consumers\IUpdateFooCommandConsumer.cs" />
-    <Compile Include="Consumers\UpdateFooCommandVersion2Consumer.cs" />
-    <Compile Include="Other\ReceiveObserver.cs" />
+    <Compile Include="FooBar.Consumers\AnotherBarEventConsumer.cs" />
+    <Compile Include="FooBar.Consumers\ServeBarsCommandConsumer.cs" />
+    <Compile Include="FooBar.Consumers\IUpdateFooCommandConsumer.cs" />
+    <Compile Include="FooBar.Consumers\UpdateFooCommandVersion2Consumer.cs" />
+    <Compile Include="MassTransit.Observers\ReceiveObserver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Consumers\BarEventConsumer.cs" />
-    <Compile Include="Consumers\UpdateFooCommandConsumer.cs" />
+    <Compile Include="FooBar.Consumers\BarEventConsumer.cs" />
+    <Compile Include="FooBar.Consumers\UpdateFooCommandConsumer.cs" />
+    <Compile Include="Saga.Consumers\UpdateProductsStartedEventConsumer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -105,6 +106,7 @@
       <Name>Messaging.Infrastructure.ServiceBus</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
