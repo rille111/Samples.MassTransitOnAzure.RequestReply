@@ -42,7 +42,7 @@ namespace RequestReply.Sender
             {
                 // You must configure this in the a config.json file (see the example)
                 var connstring = new JsonConfigFileReader().GetValue("AzureSbConnectionString");
-                _azureBus = AzureSbBusConfigurator.CreateBus(connstring);
+                _azureBus = new AzureSbBusConfigurator(connstring).CreateBus();
 
                 txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> AzureSB Bus started. " + connstring + " \n");
 

@@ -78,8 +78,8 @@ namespace RequestReply.Receiver
         {
             var connstring = new JsonConfigFileReader().GetValue("AzureSbConnectionString");
 
-            var bus = AzureSbBusConfigurator
-                .CreateBus(connstring, (cfg, host) => 
+            var bus = new AzureSbBusConfigurator(connstring)
+                .CreateBus( (cfg, host) => 
                 {
                     //TODO: How to handle pool of receivers? aka "Competing Consumers"
                     // https://masstransit.readthedocs.io/en/latest/configuration/gotchas.html#how-to-setup-a-competing-consumer
@@ -119,7 +119,6 @@ namespace RequestReply.Receiver
                     // Saga Consumers
                     _machine = new UpdateProductsStateMachine();
                     _updProductsSagaRepo = new InMemorySagaRepository<UpdateProductsSaga>();
-
 
                     // It looks like all messages related to the saga must be sent to the same queue? But what if we can't control this? (Look it up)
                     cfg.ReceiveEndpoint($"{nameof(IStartUpdatingProductsCommand)}", c =>
