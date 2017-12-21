@@ -12,19 +12,21 @@
 ## Topology in Azure Service Bus
 
 * A saga flow should always have its own dedicated queue, and not be split up to other queues.
-* That queue will get Events and Commands, depending on the Events defined in the Saga State Machine, subscriptions will be set up. (MT will do this for us)
+* That saga will handle all messages that arrive to that queue
+* Either commands sent directly to the queue,
+* Or events that get sent to topics (that in turn will be forwarded to that queue as subscriptions, that the State machine will set up)
 	
-## Configuring
+## Configure
 
 * Decide upon a queue name, all saga-related stuff (commands AND events coming from topics, will be routed here)
-* Configure a Receive Endpoint to that saga queue, hooking up the Saga State machine to that Endpoint
-* Look at the State Machine
-	* Configure the possible Events to respond to (Commands sent directly to the queue, and Events)
+* Configure a Receive Endpoint to that saga queue, hooking up the Saga State machine to that Endpoint (Only one endpoint!!)
+* Look at the code for the State Machine:
+	* Configure the possible Events to respond to (Events in this case are either Commands sent directly to the queue, or Events sent to topics since those get routed to that queue)
 	* Configure the states that the Saga instances can actually be inside of
 	* Decide how to correlate messages (by what property) and set this up
 	* Set up the behaviour, starting with Initially (something needs to kick off the saga!)
 
-# Demo
+## Demo
 
 * Start only the Receiver and observe the bus
 	* See the topics and its routings to that queue
