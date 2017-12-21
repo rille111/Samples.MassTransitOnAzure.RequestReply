@@ -5,9 +5,9 @@ using MassTransit;
 using MassTransit.Saga;
 using Messaging.Infrastructure.ServiceBus.BusConfigurator;
 using RequestReply.Receiver.FooBar.Consumers;
-using RequestReply.Receiver.MassTransit.Observers;
 using RequestReply.Receiver.Saga.Consumers;
 using RequestReply.Shared.FooBar.Messages;
+using RequestReply.Shared.MassTransit.Observers;
 using RequestReply.Shared.Shared.Tools;
 using RequestReply.Shared.UpdateProducts.Saga;
 using RequestReply.Shared.UpdateProducts.Saga.Messages;
@@ -19,12 +19,26 @@ namespace RequestReply.Receiver
         // These need not to be held "in reference" they will live on anyway, but since we investigate them they are held as global variables.
         static UpdateProductsStateMachine _machine;
         static InMemorySagaRepository<UpdateProductsSaga> _updProductsSagaRepo;
+        private static bool _enableCommandConsumers;
+        private static bool _enableEventConsumers;
+        private static bool _enableRequestReplyConsumers;
+        private static bool _enableSagaConsumers;
 
         static void Main()
         {
             Console.WriteLine("Starting bus, please wait ..");
+
+            // Configure here
+            _enableCommandConsumers = false;
+            _enableEventConsumers = false;
+            _enableRequestReplyConsumers = false;
+            _enableSagaConsumers = true;
+
+            // Start the bus
             IBusControl azureBus = CreateIBusControl();
             azureBus.Start();
+
+            // Wait and exit on key press
             Console.WriteLine("Bus started, waiting for messages ..");
             WriteKeyPressInteractions();
             LoopRepoContent();
@@ -68,7 +82,7 @@ namespace RequestReply.Receiver
                 while (true)
                 {
                     await Task.Delay(1000); // <- await with cancellation
-                    
+
                 }
             });
             return task;
@@ -79,69 +93,75 @@ namespace RequestReply.Receiver
             var connstring = new JsonConfigFileReader().GetValue("AzureSbConnectionString");
 
             var bus = new AzureSbBusConfigurator(connstring)
-                .CreateBus( (cfg, host) => 
-                {
-                    //TODO: How to handle pool of receivers? aka "Competing Consumers"
-                    // https://masstransit.readthedocs.io/en/latest/configuration/gotchas.html#how-to-setup-a-competing-consumer
-                    // http://docs.masstransit-project.com/en/latest/overview/underthehood.html
+                .CreateBus((cfg, host) =>
+               {
+                   //TODO: How to handle pool of receivers? aka "Competing Consumers"
+                   // https://masstransit.readthedocs.io/en/latest/configuration/gotchas.html#how-to-setup-a-competing-consumer
+                   // http://docs.masstransit-project.com/en/latest/overview/underthehood.html
 
-                    // Command Consumers 
-                    cfg.ReceiveEndpoint<IUpdateFooCommand>(c =>  // The interface = the queue name
-                    {
-                        // LAB: Try turn all consumers off and see what happens when sending the commands ..
+                   // Command Consumers 
+                   if (_enableCommandConsumers)
+                   {
+                       cfg.ReceiveEndpoint<IUpdateFooCommand>(c =>  // The interface = the queue name
+                       {
+                           // LAB: Try turn all consumers off and see what happens when sending the commands ..
 
-                        c.Consumer<UpdateFooCommandConsumer>(); // What class will consume the messages
-                        c.Consumer<UpdateFooVersion2CommandConsumer>(); // What class will consume the messages
-                        c.Consumer<IUpdateFooCommandConsumer>(); // What class will consume the messages
-                    });
-
-                    // Event Consumers
-                    cfg.ReceiveEndpoint<IBarEvent>(c =>  // The interface name = the queue name
-                    {
-                        c.Consumer<BarEventConsumer>(); // What class will consume the messages
-                    });
-                    cfg.ReceiveEndpoint<IUpdateProductsStartedEvent>(c =>  
-                    {
-                        c.Consumer<UpdateProductsStartedEventConsumer>(); 
-                    });
-                    cfg.ReceiveEndpoint<IUpdateProductsBatchCommand>(c =>
-                    {
-                        c.Consumer<UpdateProductsBatchCommandConsumer>();
-                    });
+                           c.Consumer<UpdateFooCommandConsumer>(); // What class will consume the messages
+                           c.Consumer<UpdateFooVersion2CommandConsumer>(); // What class will consume the messages
+                           c.Consumer<IUpdateFooCommandConsumer>(); // What class will consume the messages
+                       });
+                   }
 
 
-                    // Request Reply Consumers
-                    cfg.ReceiveEndpoint<ServeBarsCommand>(c =>  // The interface name = the queue name
-                    {
-                        c.Consumer<ServeBarsCommandConsumer>(); // What class will consume the messages
-                    });
+                   // Event Consumers
+                   if (_enableEventConsumers)
+                   {
+                       cfg.ReceiveEndpoint<IBarEvent>(c =>  // The interface name = the queue name
+                        {
+                            c.Consumer<BarEventConsumer>(); // What class will consume the messages
+                        });
+                       cfg.ReceiveEndpoint<IUpdateProductsStartedEvent>(c =>
+                        {
+                            c.Consumer<UpdateProductsStartedEventConsumer>();
+                        });
+                       cfg.ReceiveEndpoint<ISagaUpdateProductsBatchCommand>(c =>
+                        {
+                            c.Consumer<UpdateProductsBatchCommandConsumer>();
+                        });
+                   }
 
-                    // Saga Consumers
-                    _machine = new UpdateProductsStateMachine();
-                    _updProductsSagaRepo = new InMemorySagaRepository<UpdateProductsSaga>();
+                   // Request Reply Consumers
+                   if (_enableRequestReplyConsumers)
+                   {
+                       cfg.ReceiveEndpoint<ServeBarsCommand>(c =>  // The interface name = the queue name
+                       {
+                           c.Consumer<ServeBarsCommandConsumer>(); // What class will consume the messages
+                       });
+                   }
 
-                    // It looks like all messages related to the saga must be sent to the same queue? But what if we can't control this? (Look it up)
-                    cfg.ReceiveEndpoint($"{nameof(IStartUpdatingProductsCommand)}", c =>
-                    {
-                        c.StateMachineSaga(_machine, _updProductsSagaRepo);
-                    });
-                    cfg.ReceiveEndpoint($"{nameof(ICommitUpdatingProductsCommand)}", c =>
-                    {
-                        c.StateMachineSaga(_machine, _updProductsSagaRepo);
-                    });
-                    cfg.ReceiveEndpoint($"{nameof(IRollbackUpdatingProductsCommand)}", c =>
-                    {
-                        c.StateMachineSaga(_machine, _updProductsSagaRepo);
-                    });
+                   // Saga Consumers
+                   _machine = new UpdateProductsStateMachine();
+                   _updProductsSagaRepo = new InMemorySagaRepository<UpdateProductsSaga>();
 
-                    // Manual Consumers
-                    //cfg.ReceiveEndpoint("manual_queue", c =>  // The interface = the queue name
-                    //{
-                    //    c.Consumer<AnotherBarEventConsumer>(); // What class will consume the messages
-                    //});
-                });
+                   if (_enableSagaConsumers)
+                   {
+                       // It looks like all messages related to the saga must be sent to the same queue? But what if we can't control this? (Look it up)
+                       cfg.ReceiveEndpoint("update_products_saga", c =>
+                       {
+                           c.StateMachineSaga(_machine, _updProductsSagaRepo);
+                       });
+                   }
+                   
+                   // Manual Consumers
+                   //cfg.ReceiveEndpoint("manual_queue", c =>  // The interface = the queue name
+                   //{
+                   //    c.Consumer<AnotherBarEventConsumer>(); // What class will consume the messages
+                   //});
+               });
+            
             // Use this to debug. Example: You send stuff that should arrive to a saga but it doesn't, and you wanna know if the messages are even received, then place breakpoints there.
-            bus.ConnectReceiveObserver(new ReceiveObserver());
+            bus.ConnectReceiveObserver(new ConsoleOutReceiveObserver());
+
             return bus;
         }
     }

@@ -65,12 +65,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FooBar.Messages\BarEvent.cs" />
-    <Compile Include="UpdateProducts.Saga.Messages\CommitUpdatingProductsCommand.cs" />
-    <Compile Include="UpdateProducts.Saga.Messages\RollbackUpdatingProductsCommand.cs" />
+    <Compile Include="MassTransit.Observers\LoggingPublishObserver.cs" />
+    <Compile Include="MassTransit.Observers\ConsoleOutReceiveObserver.cs" />
+    <Compile Include="MassTransit.Observers\LoggingSendObserver.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\SagaCommitUpdatesCommand.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\SagaRollbackUpdatesCommand.cs" />
     <Compile Include="UpdateProducts.Saga.Messages\UpdateProductsStartedEvent.cs" />
     <Compile Include="UpdateProducts.Saga\UpdateProductsSaga.cs" />
-    <Compile Include="UpdateProducts.Saga.Messages\StartUpdatingProductsCommand.cs" />
-    <Compile Include="UpdateProducts.Saga.Messages\UpdateProductsBatchCommand.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\SagaStartUpdatesCommand.cs" />
+    <Compile Include="UpdateProducts.Saga.Messages\SagaUpdateProductsBatchCommand.cs" />
     <Compile Include="UpdateProducts.Saga\UpdateProductsStateMachine.cs" />
     <Compile Include="FooBar.Messages\ServeBarsCommand.cs" />
     <Compile Include="FooBar.Messages\ServeBarsResponse.cs" />

@@ -2,12 +2,12 @@
 
 namespace RequestReply.Shared.UpdateProducts.Saga.Messages
 {
-    public interface ICommitUpdatingProductsCommand
+    public interface ISagaCommitUpdatesCommand
     {
         Guid CorrelationId { get; set; }
     }
 
-    public class CommitUpdatingProductsCommand : ICommitUpdatingProductsCommand
+    public class SagaCommitUpdatesCommand : ISagaCommitUpdatesCommand
     {
         public Guid CorrelationId { get; set; }
 

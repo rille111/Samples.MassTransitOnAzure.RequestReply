@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using MassTransit;
 using Messaging.Infrastructure.ServiceBus.BusConfigurator;
 using RequestReply.Shared.FooBar.Messages;
+using RequestReply.Shared.MassTransit.Observers;
 using RequestReply.Shared.Shared.Tools;
 using RequestReply.Shared.UpdateProducts.Saga.Messages;
 
@@ -15,11 +16,11 @@ namespace RequestReply.Sender
     public partial class frmSender : Form
     {
         private IBusControl _azureBus;
-        private Guid _correlationId;
-        private ISendEndpoint _sagaUpdateProductsBatchSendPoint;
-        private ISendEndpoint _sagaStartSendpoint;
-        private ISendEndpoint _sagaRollbackSendPoint;
-        private ISendEndpoint _sagaCommitSendPoint;
+        private Guid _lastSagaCorrelationId;
+        private readonly string _sagaQueueName = "update_products_saga";
+        private ISendEndpoint _sagaSendPoint;
+        private LoggingPublishObserver _publishObserver;
+        private LoggingSendObserver _sendObserver;
 
         public frmSender()
         {
@@ -27,7 +28,17 @@ namespace RequestReply.Sender
 
             PopulateUiElements();
 
-            StartAzureBus();
+            ConfigureBus();
+
+            ConnectObservers();
+        }
+
+        private void ConnectObservers()
+        {
+            _publishObserver = new LoggingPublishObserver(LogObserver);
+            _sendObserver = new LoggingSendObserver(LogObserver);
+            _azureBus.ConnectPublishObserver(_publishObserver);
+            _azureBus.ConnectSendObserver(_sendObserver);
         }
 
         /// <summary>
@@ -36,7 +47,7 @@ namespace RequestReply.Sender
         /// If not intending to use Request-Reply, or Fault-To, or Reply-To, no need to start the bus with .Start(),
         /// just configure it and use it to publish Events or get send-endpoints to send Commands/Queries.
         /// </summary>
-        private async void StartAzureBus()
+        private void ConfigureBus()
         {
             try
             {
@@ -44,22 +55,17 @@ namespace RequestReply.Sender
                 var connstring = new JsonConfigFileReader().GetValue("AzureSbConnectionString");
                 _azureBus = new AzureSbBusConfigurator(connstring).CreateBus();
 
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> AzureSB Bus started. " + connstring + " \n");
+                LogLine("AzureSB Bus started. ConnString: " + connstring);
 
                 // This is necessary in order to receive replies from the request/reply mechanism. 
                 // LAB: Try turn it off and see what happens when you send request/replies ..
-                await _azureBus.StartAsync();
+                //await _azureBus.StartAsync();
 
-                _sagaStartSendpoint = await _azureBus.GetSendEndpointAsync<IStartUpdatingProductsCommand>();
-                _sagaUpdateProductsBatchSendPoint = await _azureBus.GetSendEndpointAsync<IUpdateProductsBatchCommand>();
-                _sagaRollbackSendPoint = await _azureBus.GetSendEndpointAsync<IRollbackUpdatingProductsCommand>();
-                _sagaCommitSendPoint = await _azureBus.GetSendEndpointAsync<ICommitUpdatingProductsCommand>();
-
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Bus started. Bus.Adress: {_azureBus.Address} \n");
+                LogLine($"Bus Created. Bus.Adress: {_azureBus.Address}");
             }
             catch (Exception ex)
             {
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception starting Azure Bus!! " + ex.Message + " \n");
+                LogError("Exception starting Azure Bus!! " + ex.Message);
             }
         }
 
@@ -70,18 +76,18 @@ namespace RequestReply.Sender
         {
             try
             {
-                await _azureBus.Publish(new BarEvent
+                await _azureBus.Publish<IBarEvent>(new BarEvent
                 {
                     Id = Guid.NewGuid(),
                     Text = txtMessageText.Text,
                     TimeStampSent = DateTime.Now
                 });
 
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(BarEvent)}) sent OK \n");
+                LogLine($"Message ({nameof(BarEvent)}) sent OK.");
             }
             catch (Exception ex)
             {
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+                LogError($"Exception! \n ExType: {ex.GetType().Name}\r\n ExMessage: {ex.Message}\r\n");
             }
         }
 
@@ -93,11 +99,11 @@ namespace RequestReply.Sender
             try
             {
                 // Need a Send Endpoint in order to know where to deliver the messages.
-                var commandSendpoint = await _azureBus.GetSendEndpointAsync<IUpdateFooCommand>();
+                _sagaSendPoint = await _azureBus.GetSendEndpointAsync(_sagaQueueName);
 
                 // Create a command to send, depending on what is chosen in the dropdown. 
                 // Note: The created object is still declared as IUpdateFooCommand, which will have its effect on Masstransit when sending unless you convert it upon sending!
-                IUpdateFooCommand commandToSend = CreateCommandBasedOnDropdown();
+                IUpdateFooCommand commandToSend = ChooseCommandByDropdown();
                 commandToSend.Id = Guid.NewGuid();
                 commandToSend.Text = txtMessageText.Text;
                 commandToSend.TimeStampSent = DateTime.Now;
@@ -108,45 +114,47 @@ namespace RequestReply.Sender
                 // and hence moved to the _skipped queue.
                 switch (drpCommandType.SelectedIndex)
                 {
-                    case 0:
-                        await commandSendpoint.Send((UpdateFooCommand)commandToSend);
+                    case 0:_sagaSendPoint = await _azureBus.GetSendEndpointAsync(_sagaQueueName);
+                        await _sagaSendPoint.Send((UpdateFooCommand)commandToSend);
+                        LogLine($"Message ({nameof(UpdateFooCommand)}) sent OK.");
                         break;
                     case 1:
-                        await commandSendpoint.Send((UpdateFooVersion2Command)commandToSend);
+                        await _sagaSendPoint.Send((UpdateFooVersion2Command)commandToSend);
+                        LogLine($"Message ({nameof(UpdateFooVersion2Command)}) sent OK.");
                         break;
                     default:
                         throw new NotImplementedException();
                 }
-
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateFooCommand)}) sent OK \n");
             }
             catch (Exception ex)
             {
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+                LogError($"Exception! \r\n ExType: {ex.GetType().Name}\r\n ExMessage: {ex.Message}\r\n");
             }
         }
 
         private async void btnSagaStart_Click(object sender, EventArgs e)
         {
-            _correlationId = Guid.NewGuid();
+            _lastSagaCorrelationId = Guid.NewGuid();
             try
             {
                 if (string.IsNullOrEmpty(txtSagaCorrelate.Text.Trim()))
                     throw new ArgumentNullException($"{nameof(txtSagaCorrelate)}");
 
-                await _sagaStartSendpoint.Send(new StartUpdatingProductsCommand
+                _sagaSendPoint = await _azureBus.GetSendEndpointAsync(_sagaQueueName);
+
+                await _sagaSendPoint.Send(new SagaStartUpdatesCommand
                 {
-                    // We need *something* pretty unique to correlate against
+                    // We can either something pretty unique to correlate against. OrderId could be a candidate.
                     UniqueText = txtSagaCorrelate.Text.Trim(),
-                    // If the Saga-starting message is under your control, you can simplify things by generating your own CorrelationId
-                    CorrelationId = _correlationId
+                    // OR! If the Saga-starting message is under your control, you can simplify things by generating your own CorrelationId.
+                    CorrelationId = _lastSagaCorrelationId
                 });
 
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(StartUpdatingProductsCommand)}) sent OK \n");
+                LogLine($"Message ({nameof(SagaStartUpdatesCommand)}) sent OK \r\n");
             }
             catch (Exception ex)
             {
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+                LogError($"Exception! \r\n ExType: {ex.GetType().Name}\r\n ExMessage: {ex.Message}\r\n");
             }
         }
 
@@ -154,23 +162,24 @@ namespace RequestReply.Sender
         {
             try
             {
+                _sagaSendPoint = await _azureBus.GetSendEndpointAsync(_sagaQueueName);
                 // ReSharper disable once UseObjectOrCollectionInitializer
-                var cmd = new UpdateProductsBatchCommand();
+                var cmd = new SagaUpdateProductsBatchCommand();
                 //cmd. = txtSagaCorrelate.Text.Trim();
-                cmd.CorrelationId = _correlationId;
+                cmd.CorrelationId = _lastSagaCorrelationId;
                 cmd.Products.Add(new ProductData());
                 cmd.Products.Add(new ProductData());
                 cmd.Products.Add(new ProductData());
                 cmd.Products.Add(new ProductData());
                 cmd.Products.Add(new ProductData());
 
-                await _sagaUpdateProductsBatchSendPoint.Send(cmd);
+                await _sagaSendPoint.Send(cmd);
 
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(UpdateProductsBatchCommand)}) sent OK \n");
+                LogLine($"Message ({nameof(SagaUpdateProductsBatchCommand)}) sent OK \r\n");
             }
             catch (Exception ex)
             {
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+                LogError($"Exception);ption! \r\n ExType: {ex.GetType().Name}\r\n ExMessage: {ex.Message}\r\n");
             }
         }
 
@@ -178,16 +187,17 @@ namespace RequestReply.Sender
         {
             try
             {
-                await _sagaRollbackSendPoint.Send(new RollbackUpdatingProductsCommand()
+                _sagaSendPoint = await _azureBus.GetSendEndpointAsync(_sagaQueueName);
+                await _sagaSendPoint.Send(new SagaRollbackUpdatesCommand()
                 {
-                    CorrelationId = _correlationId
+                    CorrelationId = _lastSagaCorrelationId
                 });
 
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(RollbackUpdatingProductsCommand)}) sent OK \n");
+                LogLine($"Message ({nameof(SagaRollbackUpdatesCommand)}) sent OK \r\n");
             }
             catch (Exception ex)
             {
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+                LogError($"Exception! \r\n ExType: {ex.GetType().Name}\r\n ExMessage: {ex.Message}\r\n");
             }
         }
 
@@ -195,20 +205,19 @@ namespace RequestReply.Sender
         {
             try
             {
-                await _sagaCommitSendPoint.Send(new CommitUpdatingProductsCommand
+                _sagaSendPoint = await _azureBus.GetSendEndpointAsync(_sagaQueueName);
+                await _sagaSendPoint.Send(new SagaCommitUpdatesCommand
                 {
-                    CorrelationId = _correlationId
+                    CorrelationId = _lastSagaCorrelationId
                 });
 
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Message ({nameof(CommitUpdatingProductsCommand)}) sent OK \n");
+                LogLine($"Message ({nameof(SagaCommitUpdatesCommand)}) sent OK \r\n");
             }
             catch (Exception ex)
             {
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception! \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+                LogError($"Exception! \r\n ExType: {ex.GetType().Name}\r\n ExMessage: {ex.Message}\r\n");
             }
         }
-
-        #region Helper methods (No need to look at this code)
 
         private void btnSendRequestReply_Click(object sender, EventArgs e)
         {
@@ -249,7 +258,7 @@ namespace RequestReply.Sender
                             // Output on main thread since we're in a task continuation.
                             Invoke(new Action(() =>
                             {
-                                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Reply ({response.ServedCounter}): {response.AckText}\n");
+                                LogLine($"Reply ({response.ServedCounter}): {response.AckText}\r\n");
                             }));
                         });
                     requestTasks.Add(task);
@@ -257,16 +266,18 @@ namespace RequestReply.Sender
                     totalBarsSent += thisBatchSize;
                 }
 
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Sent {totalBarsSent} Commands, now waiting for all to complete ..\n");
+                LogLine($"Sent {totalBarsSent} Commands, now waiting for all to complete ..\r\n");
 
                 // Wait for all to complete
                 Task.WaitAll(requestTasks.ToArray());
             }
             catch (Exception ex)
             {
-                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> Exception when doing Request/Reply. \n ExType: {ex.GetType().Name}\n ExMessage: {ex.Message}\n");
+                LogError($"Exception when doing Request/Reply. \r\n ExType: {ex.GetType().Name}\r\n ExMessage: {ex.Message}\r\n");
             }
         }
+
+        #region Helper methods (No need to look at this code)
 
         private void PopulateUiElements()
         {
@@ -314,7 +325,7 @@ namespace RequestReply.Sender
             return totalSent < totalToSend;
         }
 
-        private IUpdateFooCommand CreateCommandBasedOnDropdown()
+        private IUpdateFooCommand ChooseCommandByDropdown()
         {
             IUpdateFooCommand commandToSend;
             if (drpCommandType.SelectedIndex == 0)
@@ -324,6 +335,52 @@ namespace RequestReply.Sender
             else
                 throw new NotImplementedException($"{nameof(drpCommandType)}");
             return commandToSend;
+        }
+
+        private void LogError(string text)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() =>
+                {
+                    txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> {text}\r\n");
+                }));
+            }
+            else
+            {
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> {text}\r\n");
+            }
+
+        }
+
+        private void LogLine(string text)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() =>
+                {
+                    txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> {text}\r\n");
+                }));
+            }
+            else
+            {
+                txtLog.AppendText($"{DateTime.Now:HH:mm:ss}> {text}\r\n");
+            }
+        }
+
+        private void LogObserver(string text)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(() =>
+                {
+                    txtObserverLog.AppendText($"{DateTime.Now:HH:mm:ss}> {text}\r\n");
+                }));
+            }
+            else
+            {
+                txtObserverLog.AppendText($"{DateTime.Now:HH:mm:ss}> {text}\r\n");
+            }
         }
 
         #endregion

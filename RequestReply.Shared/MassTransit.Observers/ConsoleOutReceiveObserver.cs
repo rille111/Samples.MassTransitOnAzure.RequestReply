@@ -2,15 +2,15 @@
 using System.Threading.Tasks;
 using MassTransit;
 
-namespace RequestReply.Receiver.MassTransit.Observers
+namespace RequestReply.Shared.MassTransit.Observers
 {
-    public class ReceiveObserver :
+    public class ConsoleOutReceiveObserver :
         IReceiveObserver
     {
         public Task PreReceive(ReceiveContext context)
         {
-            
             // called immediately after the message was delivery by the transport
+            Console.Out.WriteLineAsync($"MASSTRANSIT PreReceive: On Address: {context.InputAddress}");
             return Task.CompletedTask;
         }
 
@@ -30,14 +30,14 @@ namespace RequestReply.Receiver.MassTransit.Observers
         public Task ConsumeFault<T>(ConsumeContext<T> context, TimeSpan elapsed, string consumerType, Exception exception) where T : class
         {
             // called when the message is consumed but the consumer throws an exception
-            Console.Out.WriteLineAsync($"MASSTRANSIT ConsumeFault! Exception: " + exception.Message);
+            Console.Error.WriteLineAsync($"MASSTRANSIT ConsumeFault! Exception: " + exception.Message);
             return Task.CompletedTask;
         }
 
         public Task ReceiveFault(ReceiveContext context, Exception exception)
         {
             // called when an exception occurs early in the message processing, such as deserialization, etc.
-            Console.Out.WriteLineAsync($"MASSTRANSIT ReceiveFault! Exception: " + exception.Message);
+            Console.Error.WriteLineAsync($"MASSTRANSIT ReceiveFault! Exception: " + exception.Message);
             return Task.CompletedTask;
         }
     }

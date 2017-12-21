@@ -1,27 +1,23 @@
 ﻿using System;
 using Automatonymous;
-using MassTransit;
 using RequestReply.Shared.UpdateProducts.Saga.Messages;
 
 // https://app.pluralsight.com/player?course=masstransit-rabbitmq-scaling-microservices&author=roland-guijt&name=masstransit-rabbitmq-scaling-microservices-m5&clip=6&mode=live
+// http://masstransit-project.com/MassTransit/advanced/sagas/automatonymous.html
+// http://automatonymous.readthedocs.io/en/latest/configuration/quickstart.html
 namespace RequestReply.Shared.UpdateProducts.Saga
 {
-    /// <summary>
-    ///     This is the State Machine Saga.
-    /// </summary>
-    /// <remarks>
-    ///     http://masstransit-project.com/MassTransit/advanced/sagas/automatonymous.html
-    /// </remarks>
     public class UpdateProductsStateMachine : MassTransitStateMachine<UpdateProductsSaga>
     {
+        // The Events that may occur during the lifecycle of the Saga (Commands and Events from the queues/topics. (Can Events not coming from the queues be used as well?)
+        public Event<SagaStartUpdatesCommand> Started { get; set; }
+        public Event<SagaUpdateProductsBatchCommand> UpdateBatch { get; set; }
+        public Event<SagaCommitUpdatesCommand> Finished { get; set; }
+        public Event<SagaRollbackUpdatesCommand> Rollback { get; set; }
+
         // The possible Saga states here:
         public State Updating { get; set; }
         public State Completed { get; set; }
-
-        // The Events that may occur during the lifecycle of the Saga (Commands and Events from the queues/topics. (Can Events not coming from the queues be used as well?)
-        public Event<StartUpdatingProductsCommand> Started { get; set; }
-        public Event<CommitUpdatingProductsCommand> Finished { get; set; }
-        public Event<RollbackUpdatingProductsCommand> Rollback { get; set; }
 
         // And the behaviour
         public UpdateProductsStateMachine()
@@ -41,19 +37,20 @@ namespace RequestReply.Shared.UpdateProducts.Saga
             // And the Correlation for the other Events
             Event(() => Finished, x => x.CorrelateById(context => context.Message.CorrelationId)); // We can now use .CorrelationId because this is a message class that we 'own' and therefore implemented.
             Event(() => Rollback, x => x.CorrelateById(context => context.Message.CorrelationId)); // Same here. I think it gets autopopulated from the above .NewId() code, and brought along in the bus..
+            Event(() => UpdateBatch, x => x.CorrelateById(context => context.Message.CorrelationId));
 
             // We tell the Saga what actually can initiate a new workflow with 'Initially'
             Initially(
                 When(Started) // First, listen on this command
                     .Then(context =>
                     {
-                        Console.Out.WriteLineAsync($"Saga: Initiating Saga, with {nameof(StartUpdatingProductsCommand.UniqueText)}: {context.Data.UniqueText}, ");
+                        Console.Out.WriteLineAsync($"Saga: Initiating Saga, with {nameof(SagaStartUpdatesCommand.UniqueText)}: {context.Data.UniqueText}, ");
                         // Put the details in the state object (Set the saga instance properties)
                         context.Instance.CreatedUtc = DateTime.UtcNow;
                         context.Instance.SomethingUnique = context.Data.UniqueText;
                     })
                     .ThenAsync(context =>
-                        Console.Out.WriteLineAsync($"Saga: Started! {nameof(StartUpdatingProductsCommand)}: Instance.CorrId: {context.Data.CorrelationId}, To Saga.CorrelationId: {context.Instance.CorrelationId}"))
+                        Console.Out.WriteLineAsync($"Saga: Started! {nameof(SagaStartUpdatesCommand)}: Instance.CorrId: {context.Data.CorrelationId}, To Saga.CorrelationId: {context.Instance.CorrelationId}"))
 
                         // Publish some Event, a consumer somewhere will get ready for batched updates..
                         .Publish(ctx => new UpdateProductsStartedEvent(ctx.Instance))
@@ -64,6 +61,11 @@ namespace RequestReply.Shared.UpdateProducts.Saga
 
             // Set up what Events can happen during when state is 'Active'
             During(Updating,
+                When(UpdateBatch)
+                    .Then(context =>
+                    {
+                        Console.Out.WriteLineAsync($"Saga: UPDATE BATCH! Saga.CorrId: {context.Instance.CorrelationId}, Products.Count: {context.Data.Products?.Count}");
+                    }),
                 When(Rollback)
                     .Then(context =>
                     {

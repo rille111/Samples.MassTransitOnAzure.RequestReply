@@ -4,17 +4,17 @@ using MassTransit;
 
 namespace RequestReply.Shared.UpdateProducts.Saga.Messages
 {
-    public interface IUpdateProductsBatchCommand
+    public interface ISagaUpdateProductsBatchCommand
     {
         Guid CorrelationId { get; set; }
         List<ProductData> Products { get; set; }
     }
 
-    public class UpdateProductsBatchCommand : IUpdateProductsBatchCommand
+    public class SagaUpdateProductsBatchCommand : ISagaUpdateProductsBatchCommand
     {
         public Guid CorrelationId { get; set; }
         public List<ProductData> Products { get; set; }
-        public UpdateProductsBatchCommand()
+        public SagaUpdateProductsBatchCommand()
         {
             this.Products = new List<ProductData>();
         }

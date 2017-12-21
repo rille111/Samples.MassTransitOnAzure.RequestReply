@@ -2,11 +2,11 @@ using System;
 
 namespace RequestReply.Shared.UpdateProducts.Saga.Messages
 {
-    public interface IRollbackUpdatingProductsCommand
+    public interface ISagaRollbackUpdatesCommand
     {
         Guid CorrelationId { get; set; }
     }
-    public class RollbackUpdatingProductsCommand : IRollbackUpdatingProductsCommand
+    public class SagaRollbackUpdatesCommand : ISagaRollbackUpdatesCommand
     {
         public Guid CorrelationId { get; set; }
     }

@@ -51,6 +51,7 @@
             this.btnSagaRollback = new System.Windows.Forms.Button();
             this.btnSagaUpdateProducts = new System.Windows.Forms.Button();
             this.btnSagaStart = new System.Windows.Forms.Button();
+            this.txtObserverLog = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -138,7 +139,7 @@
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(616, 184);
+            this.txtLog.Size = new System.Drawing.Size(616, 156);
             this.txtLog.TabIndex = 8;
             // 
             // groupBox1
@@ -287,11 +288,27 @@
             this.btnSagaStart.UseVisualStyleBackColor = true;
             this.btnSagaStart.Click += new System.EventHandler(this.btnSagaStart_Click);
             // 
+            // txtObserverLog
+            // 
+            this.txtObserverLog.AcceptsReturn = true;
+            this.txtObserverLog.AcceptsTab = true;
+            this.txtObserverLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtObserverLog.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.txtObserverLog.Location = new System.Drawing.Point(14, 558);
+            this.txtObserverLog.Multiline = true;
+            this.txtObserverLog.Name = "txtObserverLog";
+            this.txtObserverLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtObserverLog.Size = new System.Drawing.Size(616, 156);
+            this.txtObserverLog.TabIndex = 13;
+            // 
             // frmSender
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(642, 592);
+            this.ClientSize = new System.Drawing.Size(642, 727);
+            this.Controls.Add(this.txtObserverLog);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -338,5 +355,6 @@
         private System.Windows.Forms.TextBox txtSagaCorrelate;
         private System.Windows.Forms.Button btnSagaRollback;
         private System.Windows.Forms.Button btnSagaUpdateProducts;
+        private System.Windows.Forms.TextBox txtObserverLog;
     }
 }
